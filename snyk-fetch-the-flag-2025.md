@@ -32,7 +32,7 @@ Read The Rules
 ### Solution
 
 To solve the read the rules challenge I viewed the source code of the page to find a flag in the HTML comments:
-![[Pasted image 20250227105732.png]]
+![image](https://github.com/user-attachments/assets/7e107d38-12ca-4046-9011-dbb17d1c9b15)
 
 ---
 
