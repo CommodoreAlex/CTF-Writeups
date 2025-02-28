@@ -32,6 +32,7 @@ Read The Rules
 ### Solution
 
 To solve the read the rules challenge I viewed the source code of the page to find a flag in the HTML comments:
+
 ![image](https://github.com/user-attachments/assets/7e107d38-12ca-4046-9011-dbb17d1c9b15)
 
 ---
@@ -51,6 +52,7 @@ Join the Discord!
 ### Solution
 
 This was another freebie, where you join the Discord and view the channel for a flag:
+
 ![image](https://github.com/user-attachments/assets/f7acd062-53b1-4989-a141-1a433a7f864e)
 
 
@@ -113,6 +115,7 @@ for key in range(256):
 ```
 
 See the output of the Python program for the flag:
+
 ![image](https://github.com/user-attachments/assets/23b1b5f7-9e41-416e-a1e0-3ea6c3283e28)
 
 
