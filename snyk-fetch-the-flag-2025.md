@@ -271,10 +271,12 @@ Connect with: `nc challenge.ctf.games 30739`
 ### Solution
 
 Connecting to the remote endpoint shows us a very Fallout-esque looking terminal:
+
 ![image](https://github.com/user-attachments/assets/94ceb066-b330-47b0-ae21-fa7abeea700d)
 
 
 When you input words to the screen as if you were 'hacking' in Fallout we're either decreasing our chances or we will receive the flag, see here for the flag:
+
 ![image](https://github.com/user-attachments/assets/53e2a881-e79c-461a-90b4-737b3707f2f2)
 
 
@@ -304,18 +306,22 @@ a̮ăaa̋{áa̲aȧa̮ȧaa̮áa̲a̧ȧȧa̮ȧaa̲a̧aa̮ȧa̲aáa̮a̲aa̲a̮aaa�
 The data is really weird. Looking at the problem description we notice `xkcd` cipher. We can research that to find out that a 'scream cipher' exists and is relating to this scenario.
 
 A table from the website: https://www.explainxkcd.com/wiki/index.php/3054:_Scream_Cipher:
+
 ![image](https://github.com/user-attachments/assets/f7a0b1ef-ede3-4f6b-b666-320e0327c775)
 
 
 We can see the diacritics and manually convert the message or find a tool online:
+
 ![image](https://github.com/user-attachments/assets/dd554f2b-e234-48e0-9698-4e67aa4a8b14)
 
 
 We are specifically using this part of the table to decode the message and we automate the process using this online tool: https://frostbird347.bitbucket.io/db/scream.js/
+
 ![image](https://github.com/user-attachments/assets/5475ff99-af23-4d4c-a1b5-f7ea85adc605)
 
 
 The message decoded:
+
 ![image](https://github.com/user-attachments/assets/a82db03e-5bb4-4f0a-958b-d8f2822d2815)
 
 
@@ -438,6 +444,7 @@ Enter the password:
 ```
 
 We can use the password we saw earlier (`unlock_me_123`):
+
 ![image](https://github.com/user-attachments/assets/180267ed-aeac-4bb6-8086-32b424233cd6)
 
 
@@ -466,12 +473,14 @@ Attachments: challenge.ps1
 ### Solution
 
 This is the contents of challenge.ps1:
+
 ![image](https://github.com/user-attachments/assets/17bb4cb4-3302-41b1-bc1f-6106e12062ca)
 
 
 We can run the encoded variable content through `echo "" | base64 -d` to see what it reveals.
 
 I ran it again on the output as we find a second encoded string (the plaintext code above kind of insinuates this) and we get the flag:
+
 ![image](https://github.com/user-attachments/assets/6fec3077-3cba-462d-ad00-9fecc83e77d1)
 
 
@@ -583,11 +592,13 @@ Enter the password:
 The first thing I did was run LTRACE against the binary to attempt to add an input of 'test' and see what it returns with to potentially get a password.
 
 We are able to get a password because of the insecure `strcmp` function inside of the program:
+
 ![image](https://github.com/user-attachments/assets/48701e46-472e-4d2e-86f9-79ed18ce1e65)
 
 
 
 We retrieve the flag using the password:
+
 ![image](https://github.com/user-attachments/assets/823eaf51-5f7c-4bc7-a374-94bf98fb16bb)
 
 
