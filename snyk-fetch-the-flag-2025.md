@@ -1,6 +1,8 @@
 # Snyk Fetch The Flag 2025 CTF Writeup
 
-Welcome to my **CTF Writeup** for the **Snyk Fetch The Flag 2025 CTF** competition. In this file, I’ll walk through the challenges I solved during the event, providing insights into the tools, techniques, and vulnerabilities I encountered and how I approached solving each problem.
+Welcome to my **CTF Writeup** for the **Snyk Fetch The Flag 2025 CTF** competition. 
+
+In this file, I’ll walk through the challenges I solved during the event, providing insights into the tools, techniques, and vulnerabilities I encountered and how I approached solving each problem.
 
 ---
 
