@@ -6,6 +6,9 @@ In this file, I’ll walk through the challenges I solved during the event, prov
 
 ---
 
+![Certificate CTF](https://github.com/user-attachments/assets/1c8fbee4-89a3-43e8-8daa-477601376c07)
+
+
 ## Table of Contents
 - [Challenge 1: Read The Rules](#challenge-1-read-the-rules)
 - [Challenge 2: Technical Support](#challenge-2-technical-support)
