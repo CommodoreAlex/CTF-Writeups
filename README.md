@@ -1,4 +1,4 @@
-# CTF Writeups
+# CAPTURE THE FLAG COMPETITIONS
 
 Welcome to my **Capture The Flag (CTF)** writeups repository! In this repository, you'll find detailed writeups for entire CTF competitions I've participated in. Each file contains solutions to all the problems I’ve solved in a specific CTF event, walking through the steps, tools, techniques, and vulnerabilities involved in each challenge.
 
