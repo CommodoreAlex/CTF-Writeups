@@ -5,10 +5,17 @@ Welcome to my **CTF Writeup** for the **Snyk Fetch The Flag 2025 CTF** competiti
 ---
 
 ## Table of Contents
-- [Challenge 1: Read The Rules](#Challenge-1:-Read-The-Rules)
-- [Challenge 2: Problem Title](#challenge-2-problem-title)
-- [Challenge 3: Problem Title](#challenge-3-problem-title)
-- [Challenge X: Problem Title](#challenge-x-problem-title)
+- [Challenge 1: Read The Rules](#challenge-1-read-the-rules)
+- [Challenge 2: Technical Support](#challenge-2-technical-support)
+- [Challenge 3: Zero Ex Six One](#challenge-3-zero-ex-six-one)
+- [Challenge 4: CTF 101](#challenge-4-ctf-101)
+- [Challenge 5: Science 100](#challenge-5-science-100)
+- [Challenge 6: Screaming Crying Throwing Up](#challenge-6-screaming-crying-throwing-up)
+- [Challenge 7: String Me Along](#challenge-7-string-me-along)
+- [Challenge 8: A Powerful Shell](#challenge-8-a-powerful-shell)
+- [Challenge 9: An Offset Amongst Friends](#challenge-9-an-offset-amongst-friends)
+- [Conclusion](#conclusion)
+
 
 ---
 
