@@ -113,7 +113,8 @@ for key in range(256):
 ```
 
 See the output of the Python program for the flag:
-![[Pasted image 20250227124113.png]]
+![image](https://github.com/user-attachments/assets/23b1b5f7-9e41-416e-a1e0-3ea6c3283e28)
+
 
 This script attempts **every possible XOR key** (0-255) and checks if the decryption produces **a readable ASCII message**. If it finds a string containing **"flag{}"**, it extracts and prints it.
 
@@ -232,7 +233,8 @@ Since the application takes user input and passes it directly to `echo`, we can 
 name=hello; ls
 ```
 
-![[Pasted image 20250227125249.png]]
+![image](https://github.com/user-attachments/assets/ee8b5a91-59ea-4157-86b1-2ee64fd8ca51)
+
 
 **Notice the listing of files in the current working directory.**
 
@@ -248,7 +250,8 @@ To read it, enter this payload in the form:
 hello; cat /app/flag.txt
 ```
 
-![[Pasted image 20250227133203.png]]
+![image](https://github.com/user-attachments/assets/70c76df5-dcd6-44f8-95c2-1177833184c0)
+
 
 This should print the flag to the webpage on the WEBSITE spawned instance.
 
@@ -268,10 +271,12 @@ Connect with: `nc challenge.ctf.games 30739`
 ### Solution
 
 Connecting to the remote endpoint shows us a very Fallout-esque looking terminal:
-![[Pasted image 20250227133316.png]]
+![image](https://github.com/user-attachments/assets/94ceb066-b330-47b0-ae21-fa7abeea700d)
+
 
 When you input words to the screen as if you were 'hacking' in Fallout we're either decreasing our chances or we will receive the flag, see here for the flag:
-![[Pasted image 20250227133802.png]]
+![image](https://github.com/user-attachments/assets/53e2a881-e79c-461a-90b4-737b3707f2f2)
+
 
 ---
 
@@ -299,16 +304,20 @@ a̮ăaa̋{áa̲aȧa̮ȧaa̮áa̲a̧ȧȧa̮ȧaa̲a̧aa̮ȧa̲aáa̮a̲aa̲a̮aaa�
 The data is really weird. Looking at the problem description we notice `xkcd` cipher. We can research that to find out that a 'scream cipher' exists and is relating to this scenario.
 
 A table from the website: https://www.explainxkcd.com/wiki/index.php/3054:_Scream_Cipher:
-![[Pasted image 20250227141644.png]]
+![image](https://github.com/user-attachments/assets/f7a0b1ef-ede3-4f6b-b666-320e0327c775)
+
 
 We can see the diacritics and manually convert the message or find a tool online:
-![[Pasted image 20250227141617.png]]
+![image](https://github.com/user-attachments/assets/dd554f2b-e234-48e0-9698-4e67aa4a8b14)
+
 
 We are specifically using this part of the table to decode the message and we automate the process using this online tool: https://frostbird347.bitbucket.io/db/scream.js/
-![[Pasted image 20250227142101.png]]
+![image](https://github.com/user-attachments/assets/5475ff99-af23-4d4c-a1b5-f7ea85adc605)
+
 
 The message decoded:
-![[Pasted image 20250227142642.png]]
+![image](https://github.com/user-attachments/assets/a82db03e-5bb4-4f0a-958b-d8f2822d2815)
+
 
 The message is:
 ```bash
@@ -429,7 +438,8 @@ Enter the password:
 ```
 
 We can use the password we saw earlier (`unlock_me_123`):
-![[Pasted image 20250227141412.png]]
+![image](https://github.com/user-attachments/assets/180267ed-aeac-4bb6-8086-32b424233cd6)
+
 
 I was able to get the correct flag by re-using the password in the strings command output:
 ```bash
@@ -456,12 +466,14 @@ Attachments: challenge.ps1
 ### Solution
 
 This is the contents of challenge.ps1:
-![[Pasted image 20250227142932.png]]
+![image](https://github.com/user-attachments/assets/17bb4cb4-3302-41b1-bc1f-6106e12062ca)
+
 
 We can run the encoded variable content through `echo "" | base64 -d` to see what it reveals.
 
 I ran it again on the output as we find a second encoded string (the plaintext code above kind of insinuates this) and we get the flag:
-![[Pasted image 20250227143159.png]]
+![image](https://github.com/user-attachments/assets/6fec3077-3cba-462d-ad00-9fecc83e77d1)
+
 
 ---
 
@@ -571,10 +583,13 @@ Enter the password:
 The first thing I did was run LTRACE against the binary to attempt to add an input of 'test' and see what it returns with to potentially get a password.
 
 We are able to get a password because of the insecure `strcmp` function inside of the program:
-![[Pasted image 20250227143834.png]]
+![image](https://github.com/user-attachments/assets/48701e46-472e-4d2e-86f9-79ed18ce1e65)
+
+
 
 We retrieve the flag using the password:
-![[Pasted image 20250227143920.png]]
+![image](https://github.com/user-attachments/assets/823eaf51-5f7c-4bc7-a374-94bf98fb16bb)
+
 
 **Why This Worked:**
 1. **Using `ltrace`**:
