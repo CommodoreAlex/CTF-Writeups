@@ -51,7 +51,8 @@ Join the Discord!
 ### Solution
 
 This was another freebie, where you join the Discord and view the channel for a flag:
-![[Pasted image 20250227110144.png]]
+![image](https://github.com/user-attachments/assets/f7acd062-53b1-4989-a141-1a433a7f864e)
+
 
 ---
 
