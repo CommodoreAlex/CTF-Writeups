@@ -19,9 +19,10 @@ In this file, I’ll walk through the challenges I solved during the event, prov
 - [Challenge 7: String Me Along](#challenge-7-string-me-along)
 - [Challenge 8: A Powerful Shell](#challenge-8-a-powerful-shell)
 - [Challenge 9: An Offset Amongst Friends](#challenge-9-an-offset-amongst-friends)
+- [Challenge 10: Either Or](#challenge-10-either-or)
+- [Challenge 11: Math For Me](#challenge-11-math-for-me)
+- [Challenge 12: Letter2nums](#challenge-12-letter2nums))
 - [Conclusion](#conclusion)
-
-
 ---
 
 ## Challenge 1: Read The Rules
@@ -37,8 +38,7 @@ Read The Rules
 ### Solution
 
 To solve the read the rules challenge I viewed the source code of the page to find a flag in the HTML comments:
-
-![image](https://github.com/user-attachments/assets/7e107d38-12ca-4046-9011-dbb17d1c9b15)
+![[Pasted image 20250227105732.png]]
 
 ---
 
@@ -57,9 +57,7 @@ Join the Discord!
 ### Solution
 
 This was another freebie, where you join the Discord and view the channel for a flag:
-
-![image](https://github.com/user-attachments/assets/f7acd062-53b1-4989-a141-1a433a7f864e)
-
+![[Pasted image 20250227110144.png]]
 
 ---
 
@@ -120,9 +118,7 @@ for key in range(256):
 ```
 
 See the output of the Python program for the flag:
-
-![image](https://github.com/user-attachments/assets/23b1b5f7-9e41-416e-a1e0-3ea6c3283e28)
-
+![[Pasted image 20250227124113.png]]
 
 This script attempts **every possible XOR key** (0-255) and checks if the decryption produces **a readable ASCII message**. If it finds a string containing **"flag{}"**, it extracts and prints it.
 
@@ -241,8 +237,7 @@ Since the application takes user input and passes it directly to `echo`, we can 
 name=hello; ls
 ```
 
-![image](https://github.com/user-attachments/assets/ee8b5a91-59ea-4157-86b1-2ee64fd8ca51)
-
+![[Pasted image 20250227125249.png]]
 
 **Notice the listing of files in the current working directory.**
 
@@ -258,8 +253,7 @@ To read it, enter this payload in the form:
 hello; cat /app/flag.txt
 ```
 
-![image](https://github.com/user-attachments/assets/70c76df5-dcd6-44f8-95c2-1177833184c0)
-
+![[Pasted image 20250227133203.png]]
 
 This should print the flag to the webpage on the WEBSITE spawned instance.
 
@@ -279,14 +273,10 @@ Connect with: `nc challenge.ctf.games 30739`
 ### Solution
 
 Connecting to the remote endpoint shows us a very Fallout-esque looking terminal:
-
-![image](https://github.com/user-attachments/assets/94ceb066-b330-47b0-ae21-fa7abeea700d)
-
+![[Pasted image 20250227133316.png]]
 
 When you input words to the screen as if you were 'hacking' in Fallout we're either decreasing our chances or we will receive the flag, see here for the flag:
-
-![image](https://github.com/user-attachments/assets/53e2a881-e79c-461a-90b4-737b3707f2f2)
-
+![[Pasted image 20250227133802.png]]
 
 ---
 
@@ -314,24 +304,16 @@ a̮ăaa̋{áa̲aȧa̮ȧaa̮áa̲a̧ȧȧa̮ȧaa̲a̧aa̮ȧa̲aáa̮a̲aa̲a̮aaa�
 The data is really weird. Looking at the problem description we notice `xkcd` cipher. We can research that to find out that a 'scream cipher' exists and is relating to this scenario.
 
 A table from the website: https://www.explainxkcd.com/wiki/index.php/3054:_Scream_Cipher:
-
-![image](https://github.com/user-attachments/assets/f7a0b1ef-ede3-4f6b-b666-320e0327c775)
-
+![[Pasted image 20250227141644.png]]
 
 We can see the diacritics and manually convert the message or find a tool online:
-
-![image](https://github.com/user-attachments/assets/dd554f2b-e234-48e0-9698-4e67aa4a8b14)
-
+![[Pasted image 20250227141617.png]]
 
 We are specifically using this part of the table to decode the message and we automate the process using this online tool: https://frostbird347.bitbucket.io/db/scream.js/
-
-![image](https://github.com/user-attachments/assets/5475ff99-af23-4d4c-a1b5-f7ea85adc605)
-
+![[Pasted image 20250227142101.png]]
 
 The message decoded:
-
-![image](https://github.com/user-attachments/assets/a82db03e-5bb4-4f0a-958b-d8f2822d2815)
-
+![[Pasted image 20250227142642.png]]
 
 The message is:
 ```bash
@@ -452,9 +434,7 @@ Enter the password:
 ```
 
 We can use the password we saw earlier (`unlock_me_123`):
-
-![image](https://github.com/user-attachments/assets/180267ed-aeac-4bb6-8086-32b424233cd6)
-
+![[Pasted image 20250227141412.png]]
 
 I was able to get the correct flag by re-using the password in the strings command output:
 ```bash
@@ -481,16 +461,12 @@ Attachments: challenge.ps1
 ### Solution
 
 This is the contents of challenge.ps1:
-
-![image](https://github.com/user-attachments/assets/17bb4cb4-3302-41b1-bc1f-6106e12062ca)
-
+![[Pasted image 20250227142932.png]]
 
 We can run the encoded variable content through `echo "" | base64 -d` to see what it reveals.
 
 I ran it again on the output as we find a second encoded string (the plaintext code above kind of insinuates this) and we get the flag:
-
-![image](https://github.com/user-attachments/assets/6fec3077-3cba-462d-ad00-9fecc83e77d1)
-
+![[Pasted image 20250227143159.png]]
 
 ---
 
@@ -600,15 +576,10 @@ Enter the password:
 The first thing I did was run LTRACE against the binary to attempt to add an input of 'test' and see what it returns with to potentially get a password.
 
 We are able to get a password because of the insecure `strcmp` function inside of the program:
-
-![image](https://github.com/user-attachments/assets/48701e46-472e-4d2e-86f9-79ed18ce1e65)
-
-
+![[Pasted image 20250227143834.png]]
 
 We retrieve the flag using the password:
-
-![image](https://github.com/user-attachments/assets/823eaf51-5f7c-4bc7-a374-94bf98fb16bb)
-
+![[Pasted image 20250227143920.png]]
 
 **Why This Worked:**
 1. **Using `ltrace`**:
@@ -650,13 +621,420 @@ In essence, without `ltrace` revealing the password check directly, **static and
 
 ---
 
+## Challenge 10: Either Or
+
+### Problem Description
+
+Author: @Kkevsterrr
+
+Either or, but probably not both
+
+Download the file(s) below.
+Attachments: either-or
+
+### Solution
+
+Running strings on the binary shows that it takes an input and performs encryption before comparing to another string. Running the binary we're able to see what goes wrong.
+
+We can also see the insecure STRCMP function being used:
+
+![image](https://github.com/user-attachments/assets/fadb0a8c-75e5-4328-86cb-97f76e7fb161)
+
+
+As we test inputs against the program and use what the program returns to use when we examine what inputs it is comparing we can find the "secret_password" to reveal the flag:
+
+![image](https://github.com/user-attachments/assets/adcde494-1e7c-41ac-8140-93f1c4e9d7b0)
+
+
+```bash
+Flag: flag{f074d38932164b278a508df11b5eff89}
+```
+
+---
+
+## Challenge 11: Math For Me
+
+### Problem Description
+
+Author: @Kkevsterrr
+
+Just gotta do some math! 
+
+This flag is a non-standard format. It will be wrapped in flag{ prefix and } suffix
+but inside the curly braces will be any printable characters, not be just hexadecimal characters. 
+
+Download the file(s) below.
+Attachments: math4me
+
+### Solution
+
+Running GHIDRA to decompile the binary and examine the functions in the program and defined strings which are helpful in identifying high-value information:
+
+![image](https://github.com/user-attachments/assets/54e64609-8407-43c9-806d-3e523061b748)
+
+
+From this window we're able to find a `check_number` string and `computer_flag` string.
+
+We're able to find a function named check_number():
+
+![image](https://github.com/user-attachments/assets/0e3e5f67-a8a6-494f-bb4c-d5ed690dc48c)
+
+
+In the decompile window we're able to view the de-obfuscated functionality and see the math equation taking place (`0x34` is 52 in hexadecimal):
+
+![image](https://github.com/user-attachments/assets/1d4b6401-a484-45cb-b38e-580df08ae3ae)
+
+We can decompile a `compute_flag_char()` function also to see how the flag is being computed:
+```c
+void compute_flag_char(long param_1,uint param_2,int param_3)  
+  
+{  
+uint uVar1;  
+long in_FS_OFFSET;  
+int local_a8 [4];  
+undefined4 local_98;  
+undefined4 local_94;  
+undefined4 local_90;  
+undefined4 local_8c;  
+undefined4 local_88;  
+undefined4 local_84;  
+undefined4 local_80;  
+undefined4 local_7c;  
+undefined4 local_78;  
+undefined4 local_74;  
+undefined4 local_70;  
+undefined4 local_6c;  
+undefined4 local_68;  
+undefined4 local_64;  
+undefined4 local_60;  
+undefined8 local_58;  
+undefined8 local_50;  
+undefined8 local_48;  
+undefined8 local_40;  
+undefined8 local_38;  
+undefined7 local_30;  
+undefined uStack_29;  
+undefined7 uStack_28;  
+undefined8 local_21;  
+long local_10;  
+  
+local_10 = *(long *)(in_FS_OFFSET + 0x28);  
+local_58 = 0x3438666532353535;  
+local_50 = 0x6562396261636532;  
+local_48 = 0x3636333535316231;  
+local_40 = 0x3535353535383335;  
+local_38 = 0x3234386665323535;  
+local_30 = 0x65623962616365;  
+uStack_29 = 0x31;  
+uStack_28 = 0x36363335353162;  
+local_21 = 0x35353535383335;  
+local_a8[0] = 1;  
+local_a8[1] = 3;  
+local_a8[2] = 0xfffffffe;  
+local_a8[3] = 4;  
+local_98 = 0xffffffff;  
+local_94 = 2;  
+local_90 = 0xfffffffd;  
+local_8c = 1;  
+local_88 = 4;  
+local_84 = 0xfffffffe;  
+local_80 = 3;  
+local_7c = 0xffffffff;  
+local_78 = 2;  
+local_74 = 0xfffffffc;  
+local_70 = 1;  
+local_6c = 0xfffffffe;  
+local_68 = 3;  
+local_64 = 0xffffffff;  
+local_60 = 2;  
+uVar1 = local_a8[(int)param_2 % 10] + (int)(param_3 * param_2) % 5;  
+printf("%d: %d\n",(ulong)param_2,(ulong)uVar1);  
+*(char *)(param_1 + (int)param_2) = *(char *)((long)&local_58 + (long)(int)param_2) + (char)uVar1;  
+if (local_10 != *(long *)(in_FS_OFFSET + 0x28)) {  
+/* WARNING: Subroutine does not return */  
+__stack_chk_fail();  
+}  
+return;  
+}
+```
+
+In order to get the right number we can reverse the check_number equation:
+![image](https://github.com/user-attachments/assets/575b3ff6-ccd5-440f-aec3-58e5c46f29c3)
+
+
+Then we're able to obtain the flag:
+
+![image](https://github.com/user-attachments/assets/d2594ef2-3b7d-4ae8-b374-02f624f78bda)
+
+
+```
+flag{h556cdd`=ag.c53664:45569368391gc}
+```
+
+---
+
+## Challenge 12: Letter2nums
+
+### Problem Description
+
+Author: @Soups71
+
+This is Letters2Nums, a new data encryption
+format I came up with. Use the attached binary to figure out how to decrypt the
+encoded flag.
+
+Download the file(s) below.
+Attachments: letters2nums.elf and ecflag.txt
+
+### Solution
+
+This challenge uses encoding to turn the original flag into a list of numbers here:
+```bash
+┌──(root㉿kali)-[/home/kali/STATIC-SNYK/Snyk Fetch the Flag 2025 BACKUP PLAN/letters2nums]
+└─# cat encflag.txt  
+21608
+26995
+8297
+29472
+24864
+27759
+28263
+8289
+28260
+8291
+28526
+30319
+27765
+25701
+25632
+30561
+31008
+29807
+8308
+29305
+8289
+28260
+8296
+26980
+25888
+29800
+25888
+26220
+24935
+14950
+27745
+26491
+13154
+12341
+12390
+13665
+14129
+13925
+13617
+25400
+14693
+14643
+12851
+25185
+26163
+24887
+25143
+13154
+32000
+```
+
+Running strings against the binary without the protections to obfuscate function names, we can see (a heavily modified output of strings from me) that raises attention to some function names:
+```bash
+┌──(root㉿kali)-[/home/kali/STATIC-SNYK/Snyk Fetch the Flag 2025 BACKUP PLAN/letters2nums]
+└─# strings letters2nums.elf      
+fgets
+fprintf
+fopen
+fclose
+puts
+Error opening file.
+This is a long and convoluded way to try and hide the flag:
+flag.txt
+encflag.txt
+encodeChars
+writeFlag
+```
+
+Opening GHIDRA against the file (which does not run in the command line), we can see a number of non-standard function names in the strings window and look at Main where its running the main functionalities of the program to call on other places:
+```bash
+readFlag
+WriteFlag
+sl
+c
+```
+
+ **Main Function:**
+- Reads up to 39 bytes from `flag.txt` into `flag_buffer`.
+- Concatenates a prefix (`"This is a long and convoluted way to try and hide the flag:"`) with the flag into `encrypted_flag`.
+- Writes `encrypted_flag` to `encflag.txt` using `writeFlag`.
+
+```c
+undefined8 main(void)  
+  
+{  
+long in_FS_OFFSET;  
+undefined flag_buffer [48];  
+undefined encrypted_flag [264];  
+long stack_cookie;  
+  
+stack_cookie = *(long *)(in_FS_OFFSET + 0x28);  
+readFlag("flag.txt",flag_buffer);  
+c("This is a long and convoluded way to try and hide the flag:",flag_buffer);  
+writeFlag("encflag.txt",encrypted_flag);  
+if (stack_cookie != *(long *)(in_FS_OFFSET + 0x28)) {  
+/* WARNING: Subroutine does not return */  
+__stack_chk_fail();  
+}  
+return 0;  
+}
+```
+
+ **readFlag:**
+- Reads up to 39 bytes from `flag.txt` into `flag_buffer`.
+
+```c
+undefined8 readFlag(char *param_1,char *param_2)  
+  
+{  
+FILE *__stream;  
+  
+__stream = fopen(param_1,"r");  
+fgets(param_2,0x27,__stream);  
+return 0;  
+}
+```
+
+**writeFlag:**
+- Opens `encflag.txt`, calculates `encrypted_flag` length via `sl()`.
+- Encodes each character pair using `encodeChars()` and writes results (one per line).
+
+```c
+undefined8 writeFlag(char *param_1,long param_2)  
+  
+{  
+short sVar1;  
+int iVar2;  
+FILE *__stream;  
+int local_18;  
+  
+__stream = fopen(param_1,"w");  
+iVar2 = sl(param_2,0);  
+if (__stream == (FILE *)0x0) {  
+puts("Error opening file.");  
+}  
+else {  
+for (local_18 = 0; local_18 < iVar2; local_18 = local_18 + 2) {  
+sVar1 = encodeChars((int)*(char *)(param_2 + local_18),  
+(int)*(char *)(param_2 + (long)local_18 + 1));  
+fprintf(__stream,"%d\n",(ulong)(uint)(int)sVar1);  
+}  
+fclose(__stream);  
+}  
+return 0;  
+}
+```
+
+ **sl (String Length):**
+- Recursively computes `encrypted_flag` length for `writeFlag`.
+
+```c
+ulong sl(char *param_1,uint param_2)  
+  
+{  
+ulong uVar1;  
+  
+if (*param_1 == '\0') {  
+uVar1 = (ulong)param_2;  
+}  
+else {  
+uVar1 = sl(param_1 + 1,param_2 + 1);  
+}  
+return uVar1;  
+}
+```
+
+ **c (Concatenation):**
+- Joins the prefix and flag into `encrypted_flag`.
+
+```c
+int c(void *param_1,void *param_2)  
+  
+{  
+long in_RDX;  
+char *local_28;  
+char *local_20;  
+int i;  
+  
+i = 0;  
+local_20 = (char *)param_1;  
+while (local_28 = (char *)param_2, *local_20 != '\0') {  
+*(char *)(in_RDX + i) = *local_20;  
+local_20 = local_20 + 1;  
+i = i + 1;  
+}  
+while (*local_28 != '\0') {  
+*(char *)(in_RDX + i) = *local_28;  
+local_28 = local_28 + 1;  
+i = i + 1;  
+}  
+*(undefined *)(in_RDX + i) = 0;  
+return (int)(undefined *)(in_RDX + i);  
+}
+```
+
+**The encodeChars function**:
+
+- Takes two characters (`param_1` and `param_2`) and combines them into a 16-bit integer:
+- `param_1` << 8: Shifts the first character’s ASCII value 8 bits left (high byte).
+- (short)`param_2`: Takes the second character’s ASCII value (low byte).
+- CONCAT22(param_1 >> 7, (short)param_2) seems to be a decompiler artifact; the actual operation is ((int)param_1 << 8) | (int)param_2 (bitwise OR).
+- Returns an unsigned integer (e.g., for ‘a’ and ‘b’, it’s (97 << 8) | 98 = 24930).
+
+```c
+uint encodeChars(char param_1,char param_2)
+
+{
+  return CONCAT22(param_1 >> 7,(short)param_2) | (int)param_1 << 8;
+}
+```
+
+`encodeChars()` combines two characters into a number:
+- High byte = (number >> 8) & 0xFF
+- Low byte = number & 0xFF
+- Each number is decoded into two ASCII characters.
+
+Script to solve the challenge:
+```python
+#!/usr/bin/env python3
+
+nums = [21608, 26995, 8297, 29472, 24864, 27759, 28263, 8289, 28260, 8291, 28526, 30319, 27765, 25701, 25632, 30561, 31008, 29807, 8308, 29305, 8289, 28260, 8296, 26980, 25888, 29800, 25888, 26220, 24935, 14950, 27745, 26491, 13154, 12341, 12390, 13665, 14129, 13925, 13617, 25400, 14693, 14643, 12851, 25185, 26163, 24887, 25143, 13154, 32000]  
+result = ""  
+for num in nums:  
+char1 = chr((num >> 8) & 0xFF)  
+char2 = chr(num & 0xFF)  
+result += char1 + char2  
+print(result)
+```
+
+This will return the flag to us:
+```bash
+flag{3b050f5a716e51c89e9323baf3a7b73b}
+```
+
+---
+
 ## Conclusion
 
 In this CTF event, I had the opportunity to apply various cybersecurity techniques and tools. Each challenge provided unique problems, ranging from cryptography to web exploitation and reverse engineering.
 
 Unfortunately that is as far as I was able to get with the time constraints I had, and limitations of skills at the given time for tackling the other reverse engineering problems.
 
-Since I have the files locally I will be experimenting with them and attempting to add more of the solutions to this repository over time. 
+Since I have the files locally I will be experimenting with them and attempting to add more of the solutions to this repository over time, with help from other creators resources.
 
 I hope this writeup helps others who are interested in solving similar challenges and learning more about cybersecurity. If you have any questions or want to discuss any of the techniques used, feel free to reach out!
 
