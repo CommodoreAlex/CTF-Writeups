@@ -21,7 +21,7 @@ In this file, I’ll walk through the challenges I solved during the event, prov
 - [Challenge 9: An Offset Amongst Friends](#challenge-9-an-offset-amongst-friends)
 - [Challenge 10: Either Or](#challenge-10-either-or)
 - [Challenge 11: Math For Me](#challenge-11-math-for-me)
-- [Challenge 12: Letter2nums](#challenge-12-letter2nums))
+- [Challenge 12: Letter2nums](#challenge-12-letter2nums)
 - [Conclusion](#conclusion)
 ---
 
