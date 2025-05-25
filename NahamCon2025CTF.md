@@ -20,6 +20,7 @@ In this file, I’ll walk through the challenges I solved during the event, prov
 - [Challenge 6: Deflation Gangster](#Challenge-6-Deflation-Gangster)
 - [Challenge 7: SNAD](#Challenge-7-SNAD)
 - [Challenge 8: The Best Butler](#Challenge-8-The-Best-Butler)
+- [Challenge 9: Clarification Verification (Fileless Malware)](#Challenge-9-Clarification-Verification-Fileless-Malware)
 
 ----
 # Challenge 1: Screenshot
