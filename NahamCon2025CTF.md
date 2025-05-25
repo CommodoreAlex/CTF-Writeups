@@ -21,6 +21,7 @@ In this file, I’ll walk through the challenges I solved during the event, prov
 - [Challenge 7: SNAD](#Challenge-7-SNAD)
 - [Challenge 8: The Best Butler](#Challenge-8-The-Best-Butler)
 - [Challenge 9: Clarification Verification (Fileless Malware)](#Challenge-9-Clarification-Verification-Fileless-Malware)
+- [Challenge 10: FlagsFlagsFlags)](#Challenge-10-FlagsFlagsFlags)
 
 ----
 # Challenge 1: Screenshot
@@ -926,4 +927,207 @@ Decoding the most stand-out base64 text gives us the flag:
 ![image](https://github.com/user-attachments/assets/68b8102f-a132-4db2-ad2a-d6c5c9c953ab)
 
 I did this statically, but you also could have done this dynamically where you could run it and crash. Then you would be able to notice where the flag was embedded in your environment variables, via Process Monitor.
+
+# Challenge 10: FlagsFlagsFlags
+
+Author: @Kkevsterrr
+
+Did you see the strings? One of those is right, I can just feel it.
+
+Download the file(s) below.
+Attachments: 
+
+---
+
+We are up against an ELF file:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# file flagsflagsflags 
+flagsflagsflags: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, no section header
+```
+
+I ran strings on the binary `flagsflagsflags`:
+```bash
+buildinfo7ips{
+"nuA-id%v
+e elf
+5{typ&~k
+`sym
+pcln
+UPX!
+UPX!
+```
+
+This is likely packed with the Ultimate Packer for Executables (UPX), where we can unpack this to make it easier to read- it is also a ELF file potentially based on the elf statement.
+
+Making it executable and running it:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# chmod +x flagsflagsflags 
+                                                                                                                     
+┌──(root㉿kali)-[/home/kali]
+└─# ./flagsflagsflags 
+Enter the flag:
+test
+Incorrect flag!
+```
+
+This may be comparing or handling inputs.
+
+Running ltrace:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# ltrace ./flagsflagsflags                
+Couldn't find .dynsym or .dynstr in "/proc/120909/exe"
+                                                                                                                     
+Enter the flag:
+Error reading input: read /dev/stdin: input/output error
+```
+
+Running strace:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# strace ./flagsflagsflags 
+fcntl(2, F_GETFL)                       = 0x2 (flags O_RDWR)
+write(1, "Enter the flag:\n", 16Enter the flag:
+)       = 16
+read(0, test
+"test\n", 4096)                 = 5
+futex(0xa99220, FUTEX_WAKE_PRIVATE, 1)  = 1
+futex(0xc000054528, FUTEX_WAKE_PRIVATE, 1) = 1
+write(1, "Incorrect flag!\n", 16Incorrect flag!
+)       = 16
+futex(0xa99220, FUTEX_WAKE_PRIVATE, 1)  = 1
+exit_group(0)                           = ?
++++ exited with 0 +++
+```
+
+Moving onto seeing what GHIDRA has in store:
+
+![image](https://github.com/user-attachments/assets/76c8dab6-944c-4ac3-afd6-bd3b0e64c658)
+
+Create a new project and let GHIDRA do a regular analysis.
+
+We can see this binary is not very big. There are limited functions:
+
+![image](https://github.com/user-attachments/assets/3ca8ba2a-a739-4764-8714-0402fca1ad7f)
+
+I arrive at the entry point already thanks to GHIDRA:
+
+![image](https://github.com/user-attachments/assets/3e9244f2-ca37-42e7-ac3e-8229068ccac4)
+
+I realized there is a lot of packing that is making this difficult. I went to verify UPX was used:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# upx -t flagsflagsflags           
+                       Ultimate Packer for eXecutables
+                          Copyright (C) 1996 - 2024
+UPX 4.2.4       Markus Oberhumer, Laszlo Molnar & John Reiser    May 9th 2024
+
+testing flagsflagsflags [OK]
+
+Tested 1 file.
+```
+
+Unpacking the UPX packed binary:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# upx -d flagsflagsflags -o flagsflagsflags_unpacked
+                       Ultimate Packer for eXecutables
+                          Copyright (C) 1996 - 2024
+UPX 4.2.4       Markus Oberhumer, Laszlo Molnar & John Reiser    May 9th 2024
+
+        File size         Ratio      Format      Name
+   --------------------   ------   -----------   -----------
+   6918175 <-   3387920   48.97%   linux/amd64   flagsflagsflags_unpacked
+
+Unpacked 1 file.
+```
+
+Running file against the unpacked binary reveals it is stripped of functions:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# file flagsflagsflags_unpacked 
+flagsflagsflags_unpacked: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, BuildID[sha1]=8bbcb5450afeba98d27154e01464d3e4888218b7, stripped
+```
+
+I realized this is probably GO malware, and I need to look at other ways of searching.
+
+Now when we run strings against the binary we receive:
+
+![image](https://github.com/user-attachments/assets/26f82e2a-7111-4f19-b72c-b50fa3491271)
+
+Pivoted to looking for strings in GHIDRA:
+
+![image](https://github.com/user-attachments/assets/9d9b55d1-f5d7-4669-a13a-f8ae90c55ad1)
+
+Filtering on strings for 'flag' and I at least found the success phrase:
+
+![image](https://github.com/user-attachments/assets/3acbe9cc-f2aa-4e74-9c60-a018f6e55dbb)
+
+I had to rename these where they stated the incorrect / correct flag:
+
+![image](https://github.com/user-attachments/assets/f3f7645f-cec6-4149-aab0-e4ca2f608693)
+
+I am going to use GoReSym to attempt to restore names to this binary:
+https://github.com/mandiant/GoReSym
+
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# git clone https://github.com/mandiant/GoReSym.git 
+Cloning into 'GoReSym'...
+remote: Enumerating objects: 1012, done.
+remote: Counting objects: 100% (290/290), done.
+remote: Compressing objects: 100% (82/82), done.
+remote: Total 1012 (delta 244), reused 212 (delta 208), pack-reused 722 (from 1)
+Receiving objects: 100% (1012/1012), 51.66 MiB | 11.31 MiB/s, done.
+Resolving deltas: 100% (589/589), done.
+
+┌──(root㉿kali)-[/home/kali/GoReSym]
+└─# go build                                         
+go: downloading github.com/elliotchance/orderedmap v1.4.0
+go: downloading golang.org/x/arch v0.0.0-20201008161808-52c3e6f60cff
+go: downloading golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb
+go: downloading rsc.io/binaryregexp v0.2.0
+```
+
+Now we can use the tool.
+
+This will get us a list of all the demangled function names and type info in a human-readable format:
+```bash
+┌──(root㉿kali)-[/home/kali/GoReSym]
+└─# ./GoReSym /home/kali/flagsflagsflags_unpacked -p -t -human > /home/kali/output.txt
+```
+
+Showing the contents of the GO malware:
+
+![image](https://github.com/user-attachments/assets/7e4892bf-1f0d-4ca7-8235-0d07c39de5b2)
+
+**Build and Environment Details**
+
+|Field|Value|
+|---|---|
+|**Go Version**|go1.24.2|
+|**OS**|linux|
+|**Arch**|amd64|
+|**Build Mode**|exe|
+|**Compiler**|gc (Go Compiler)|
+|**LDFlags**|`-s -w`|
+
+- `-s -w` strips debug information and symbol tables – a common tactic to hinder reverse engineering.
+    
+- `CGO_ENABLED=1` means this binary **may link C code**, potentially calling native Linux libraries, which is relevant for low-level syscall analysis.            "End": 4745312,
+
+---
+
+If you run strings against the binary you're able to test all flag combinations with regex against the binary, in order to find a valid entry. This was accredited to "@Lama" on the discord -with some edits of my own:
+
+This command extracts readable strings from the `flagsflagsflags` binary and filters out flag-like patterns matching `flag{xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx}`, where `x` represents hex characters. It then uses GNU `parallel` to process up to 250 jobs concurrently, running each extracted flag through the binary for validation. The output is structured to display the flag identifier followed by its validation status, removing newline characters for clean formatting. Finally, `grep Valid` ensures that only correctly validated flags are shown.
+
+Solution:
+```bash
+strings flagsflagsflags_unpacked | grep -E -o 'flag\{[a-f0-9]{32}\}' | parallel -j250 --line-buffer 'echo -n "{}: "; echo {} | ./flagsflagsflags | tr -d "\n"' | grep Valid
+```
+
+I was trying to filter on these flags early on without notating it, and was failing to figure out how to pass the input in- this was a great solution.
 
