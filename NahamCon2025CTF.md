@@ -55,7 +55,7 @@ uf?Ao
 IEND
 ```
 
-![[Pasted image 20250523155213.png]]
+![image](https://github.com/user-attachments/assets/a0799615-1f7d-481f-81f1-0849bb9a2e79)
 
 Using the scan text utility on Windows we're able to copy the contents on the screen:
 ```txt
@@ -228,10 +228,12 @@ Press the Start button on the top-right to begin this challenge.
 ----
 
 We are presented with this page:
-![[Pasted image 20250523153742.png]]
+
+![image](https://github.com/user-attachments/assets/24475879-d3a6-4195-aa93-fb1f927ad55f)
 
 When we view the page source we can see a JavaScript source that has interesting text:
-![[Pasted image 20250523154720.png]]
+
+![image](https://github.com/user-attachments/assets/6d0dca9a-c418-475a-bbd9-25aada7c0e20)
 
 This script is storing the validation process for accepting a user or denying them, through functions that encrypt user inputs `a()` and `b()`. There is a presence of two ciphers, a Caesar cipher and a Vigenere cipher with a key of `nahamcon`:
 ```javascript
@@ -353,7 +355,8 @@ document.addEventListener('DOMContentLoaded', function () {
 ```
 
 The critical validation occurs here, where we have some ciphered texts. It is important to read everything in order to capture the full scope, and AI tools are great for speeding this up:
-![[Pasted image 20250523154821.png]]
+
+![image](https://github.com/user-attachments/assets/9a801dc5-0326-491c-bf21-192e8e558768)
 
 This script will reverse both the Caesar cipher and the Vigenère cipher:
 ```python
@@ -409,7 +412,7 @@ nahamsec
 LetTheGamesBegin2025
 ```
 
-![[Pasted image 20250523162506.png]]
+![image](https://github.com/user-attachments/assets/580b2233-c6cd-4601-b1f9-27ac282653b4)
 
 # Challenge 4: Cryptoclock
 
@@ -546,7 +549,8 @@ C628: bzip2 compressed data, block size = 900k
 ```
 
 I changed one of these files to a `.jpg` and received a flag (file 34):
-![[Pasted image 20250523174805.png]]
+
+![image](https://github.com/user-attachments/assets/6d234188-982e-4393-bc39-774d7638f0de)
 
 # Challenge 6: Deflation Gangster
 
@@ -569,7 +573,8 @@ Archive:  gangster.zip
 ```
 
 Visiting important docs we find malicious powershell:
-![[Pasted image 20250523185216.png]]
+
+![image](https://github.com/user-attachments/assets/02cc8ff6-a917-4a92-a14e-b3943fe59b63)
 
 This is a powershell invocation script:
 ```powershell
@@ -729,11 +734,12 @@ This function, `forceSettleAllGrains()`, is designed to **automatically place an
 
 This function
 
-![[Pasted image 20250523200617.png]]
+![image](https://github.com/user-attachments/assets/7a4eacdd-2845-40bc-854e-446fb3a336e8)
 
 
 Our team member Bryan Bidleman was able to copy and paste this into chatGPT, the HTML source, in order to create a solution with chat GPT for attacking this endpoint:
-![[Pasted image 20250523200745.png]]
+
+![image](https://github.com/user-attachments/assets/ec835ec9-7429-4352-b7f3-75c3f75a7d9d)
 
 The payload:
 ```javascript
@@ -741,8 +747,9 @@ The payload:
 ```
 
 
-![[Pasted image 20250523200935.png]]
-![[Pasted image 20250523200946.png]]
+![image](https://github.com/user-attachments/assets/9dff97c9-c986-414f-ba9b-4d9a7a2261e5)
+
+![image](https://github.com/user-attachments/assets/3a4faa8b-12ed-4788-9b68-bcc837debe71)
 
 # Challenge 8: The Best Butler
 
@@ -760,13 +767,16 @@ Truly, he's the best butler - he might even be able to serve up a `/flag.txt`!
 
 
 This challenge has you enter a Jenkins environment:
-![[Pasted image 20250523222651.png]]
+
+![image](https://github.com/user-attachments/assets/919e95db-f11f-4697-825d-c3a895e4f0ea)
 
 There is a build setup already:
-![[Pasted image 20250523222719.png]]
+
+![image](https://github.com/user-attachments/assets/a0d5c859-8639-444c-8c12-e270b43ee024)
 
 Click on configure:
-![[Pasted image 20250523222752.png]]
+
+![image](https://github.com/user-attachments/assets/c6852e22-8e55-4f33-96b4-00e42859c526)
 
 The previous builds show that we're running as the user 'SYSTEM' when we build.
 
@@ -778,7 +788,8 @@ println new File("/flag.txt").text
 Use this command in the script console.
 
 We are able to retrieve the flag after running the command in the script console:
-![[Pasted image 20250523222455.png]]
+
+![image](https://github.com/user-attachments/assets/56e1c4b4-4bbf-458b-a77e-2319c05a42eb)
 
 Flag:
 ```bash
