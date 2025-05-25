@@ -12,8 +12,8 @@ In this file, I’ll walk through the challenges I solved during the event, prov
 ---
 
 ## Table of Contents
-- [Challenge 1: Screenshot](#Challenge-1:-Screenshot)
-- [Challenge 2: Free Flags](#Challenge-2:-Free-Flags)
+- [Challenge 1: Screenshot](#Challenge-1-Screenshot)
+- [Challenge 2: Free Flags](#Challenge-2-Free-Flags)
 - [Challenge 3: Zero Ex Six One](#challenge-3-zero-ex-six-one)
 - [Challenge 4: CTF 101](#challenge-4-ctf-101)
 - [Challenge 5: Science 100](#challenge-5-science-100)
