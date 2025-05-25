@@ -8,9 +8,30 @@ In this file, I’ll walk through the challenges I solved during the event, prov
 
 ![NahamCert](https://github.com/user-attachments/assets/cfcdd41c-1f19-41de-bcf1-fab300f0d20a)
 
-# 
+# Table of Contents
+---
+
+## Table of Contents
+- [Challenge 1: Screenshot](#Challenge-1:-Screenshot)
+- [Challenge 2: Free Flags](#Challenge-2:-Free-Flags)
+- [Challenge 3: Zero Ex Six One](#challenge-3-zero-ex-six-one)
+- [Challenge 4: CTF 101](#challenge-4-ctf-101)
+- [Challenge 5: Science 100](#challenge-5-science-100)
+- [Challenge 6: Screaming Crying Throwing Up](#challenge-6-screaming-crying-throwing-up)
+- [Challenge 7: String Me Along](#challenge-7-string-me-along)
+- [Challenge 8: A Powerful Shell](#challenge-8-a-powerful-shell)
+- [Challenge 9: An Offset Amongst Friends](#challenge-9-an-offset-amongst-friends)
+- [Challenge 10: Either Or](#challenge-10-either-or)
+- [Challenge 11: Math For Me](#challenge-11-math-for-me)
+- [Challenge 12: Letter2nums](#challenge-12-letter2nums)
+- [Challenge 13: Echo](#Challenge-13-Echo)
+- [Challenge 14: Additional Information Needed](#Challenge-14-Additional-Information-Needed)
+- [Conclusion](#conclusion)
+
+
+
 ----
-# Challenge 1) Screenshot
+# Challenge 1: Screenshot
 
 Author: @John Hammond  
   
@@ -173,7 +194,7 @@ This is the flag:
 flag{907e5bb257cd5fc818e88a13622f3d46}
 ```
 
-# Challenge 2) Free Flags
+# Challenge 2: Free Flags
 
 Author: @John Hammond  
   
@@ -203,7 +224,7 @@ Using regular expressions we're able to isolate the correct flag:
 flag{ae6b6fb0686ec594652afe9eb6088167}
 ```
 
-# Challenge 3) Naham-Commencement 2025
+# Challenge 3: Naham-Commencement 2025
 
 Author: @HuskyHacks
 
@@ -399,7 +420,7 @@ LetTheGamesBegin2025
 
 ![[Pasted image 20250523162506.png]]
 
-# Challenge 4) Cryptoclock
+# Challenge 4: Cryptoclock
 
 Author: @JohnHammond
 
@@ -469,7 +490,7 @@ We can then capture the flag:
 Seed: 1748031088 -> Flag: flag{0e42ba180089ce6e3bb50e52587d3724}
 ```
 
-# Challenge 5) The Martian
+# Challenge 5: The Martian
 
 Author: @John Hammond
 
@@ -536,7 +557,7 @@ C628: bzip2 compressed data, block size = 900k
 I changed one of these files to a `.jpg` and received a flag (file 34):
 ![[Pasted image 20250523174805.png]]
 
-# Challenge 6) Deflation Gangster
+# Challenge 6: Deflation Gangster
 
 Author: @Kkevsterrr
 
@@ -643,7 +664,7 @@ The flag:
 └─# echo "ZmxhZ3thZjExNTBmMDdmOTAwODcyZTE2MmUyMzBkMGVmOGY5NH0K" | base64 -d
 flag{af1150f07f900872e162e230d0ef8f94}
 ```
-# Challenge 7) SNAD
+# Challenge 7: SNAD
 
 Author: @HuskyHacks  
   
@@ -732,7 +753,7 @@ The payload:
 ![[Pasted image 20250523200935.png]]
 ![[Pasted image 20250523200946.png]]
 
-# Challenge 8) The Best Butler
+# Challenge 8: The Best Butler
 
 Author: @Kkevsterrr  
   
