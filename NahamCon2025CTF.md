@@ -14,21 +14,12 @@ In this file, I’ll walk through the challenges I solved during the event, prov
 ## Table of Contents
 - [Challenge 1: Screenshot](#Challenge-1-Screenshot)
 - [Challenge 2: Free Flags](#Challenge-2-Free-Flags)
-- [Challenge 3: Zero Ex Six One](#challenge-3-zero-ex-six-one)
-- [Challenge 4: CTF 101](#challenge-4-ctf-101)
-- [Challenge 5: Science 100](#challenge-5-science-100)
-- [Challenge 6: Screaming Crying Throwing Up](#challenge-6-screaming-crying-throwing-up)
-- [Challenge 7: String Me Along](#challenge-7-string-me-along)
-- [Challenge 8: A Powerful Shell](#challenge-8-a-powerful-shell)
-- [Challenge 9: An Offset Amongst Friends](#challenge-9-an-offset-amongst-friends)
-- [Challenge 10: Either Or](#challenge-10-either-or)
-- [Challenge 11: Math For Me](#challenge-11-math-for-me)
-- [Challenge 12: Letter2nums](#challenge-12-letter2nums)
-- [Challenge 13: Echo](#Challenge-13-Echo)
-- [Challenge 14: Additional Information Needed](#Challenge-14-Additional-Information-Needed)
-- [Conclusion](#conclusion)
-
-
+- [Challenge 3: Naham-Commencement 2025](#Challenge-3-Naham-Commencement-2025)
+- [Challenge 4: Cryptoclock](#Challenge-4-Cryptoclock)
+- [Challenge 5: The Martian](#Challenge-5-The-Martian)
+- [Challenge 6: Deflation Gangster](#Challenge-6-Deflation-Gangster)
+- [Challenge 7: SNAD](#Challenge-7-SNAD)
+- [Challenge 8: The Best Butler](#Challenge-8-The-Best-Butler)
 
 ----
 # Challenge 1: Screenshot
