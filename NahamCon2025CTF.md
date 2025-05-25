@@ -1126,7 +1126,7 @@ This command extracts readable strings from the `flagsflagsflags` binary and fil
 
 Solution:
 ```bash
-strings flagsflagsflags_unpacked | grep -E -o 'flag\{[a-f0-9]{32}\}' | parallel -j250 --line-buffer 'echo -n "{}: "; echo {} | ./flagsflagsflags | tr -d "\n"' | grep Valid
+strings flagsflagsflags_unpacked | grep -E -o 'flag\{[a-f0-9]{32}\}' | parallel -j250 --line-buffer 'echo -n "{}: "; echo {} | ./flagsflagsflags_unpacked | tr -d "\n"' | grep Valid
 ```
 
 I was trying to filter on these flags early on without notating it, and was failing to figure out how to pass the input in- this was a great solution.
