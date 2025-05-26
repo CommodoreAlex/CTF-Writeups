@@ -17,6 +17,7 @@ Whether you're a beginner or an experienced practitioner, these solutions can he
 Here’s a list of CTF events covered in this repository. Each markdown file contains all the problems solved in the event, with detailed solutions and explanations (and when available, the static challenge files):
 
 * [Snyk Fetch The Flag 2025 CTF](snyk-fetch-the-flag-2025.md) and [Snyk Fetch the Flag 2025 Static Challenges.zip](https://github.com/user-attachments/files/19032017/Snyk.Fetch.the.Flag.2025.Static.Challenges.zip)
+* [NahamCon 2025 CTF](NahamCon2025CTF.md)
 
 
 
