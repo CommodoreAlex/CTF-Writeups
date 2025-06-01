@@ -18,6 +18,7 @@ Here’s a list of CTF events covered in this repository. Each markdown file con
 
 * [Snyk Fetch The Flag 2025 CTF](FetchTheFlag/snyk-fetch-the-flag-2025.md)
 * [NahamCon 2025 CTF](NahamCon/NahamCon2025CTF.md)
+* [NOPSCTF 2025 CTF](NOPSCTF/nopsctf.md)
 
 
 
