@@ -1,9 +1,10 @@
 # DOD Cyber Sentinel June 2025 CTF
 
-This CTF was a lot of fun, below is the placing that I received during the competition:
+![image](https://github.com/user-attachments/assets/c1a7c4df-3d1c-4609-83fd-6b2dd378dfce)
+
+---
 
 ![image](https://github.com/user-attachments/assets/6488bb32-9a35-4ab9-84cd-5166cc659c0d)
-
 
 ----
 
