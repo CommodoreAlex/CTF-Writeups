@@ -1,4 +1,4 @@
-# DOD Cyber Sentinel June 2025 CTF
+# Department of Defense (DOD) Cyber Sentinel June 2025 CTF
 
 ![image](https://github.com/user-attachments/assets/c1a7c4df-3d1c-4609-83fd-6b2dd378dfce)
 
