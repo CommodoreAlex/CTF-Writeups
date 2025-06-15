@@ -453,8 +453,193 @@ This looks like a prompt injection scenario. Unfortunately this challenge was br
 
 # OSINT Category
 
+## Cafe Confidential
+
+![image](https://github.com/user-attachments/assets/eb62638b-0d61-4c0e-8955-3047f65927b4)
+
+---
+
+One image is not able to be opened:
+
+![image](https://github.com/user-attachments/assets/51eabce7-d500-49cc-b817-bcd3f0cf5d81)
+
+I ran Exif tool on both to inspect the metadata.
+
+The first:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# exiftool Image_1.png 
+ExifTool Version Number         : 13.25
+File Name                       : Image_1.png
+Directory                       : .
+File Size                       : 48 kB
+File Modification Date/Time     : 2025:06:14 11:28:35-04:00
+File Access Date/Time           : 2025:06:14 11:28:35-04:00
+File Inode Change Date/Time     : 2025:06:14 11:28:35-04:00
+File Permissions                : -rw-rw-r--
+File Type                       : WEBP
+File Type Extension             : webp
+MIME Type                       : image/webp
+VP8 Version                     : 0 (bicubic reconstruction, normal loop)
+Image Width                     : 752
+Horizontal Scale                : 0
+Image Height                    : 752
+Vertical Scale                  : 0
+Image Size                      : 752x752
+Megapixels                      : 0.566
+```
+
+The second:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# ** Message: 11:29:23.805: Could not open file 'file:///home/kali/Downloads/Image_1.png': Unsupported mime type
+exifexiftool Image_2.png 
+ExifTool Version Number         : 13.25
+File Name                       : Image_2.png
+Directory                       : .
+File Size                       : 242 kB
+File Modification Date/Time     : 2025:06:14 11:28:36-04:00
+File Access Date/Time           : 2025:06:14 11:28:37-04:00
+File Inode Change Date/Time     : 2025:06:14 11:28:36-04:00
+File Permissions                : -rw-rw-r--
+File Type                       : JPEG
+File Type Extension             : jpg
+MIME Type                       : image/jpeg
+JFIF Version                    : 1.01
+Resolution Unit                 : inches
+X Resolution                    : 300
+Y Resolution                    : 300
+Image Width                     : 1000
+Image Height                    : 667
+Encoding Process                : Baseline DCT, Huffman coding
+Bits Per Sample                 : 8
+Color Components                : 3
+Y Cb Cr Sub Sampling            : YCbCr4:4:4 (1 1)
+Image Size                      : 1000x667
+Megapixels                      : 0.667
+```
+
+Then I started doing a reverse image search to see what results populate.
+
+The image that I could not see due to the `.webp` format shows me this after doing a Google reverse image search:
+
+![image](https://github.com/user-attachments/assets/f3144a1a-c241-4960-92c6-71c9adf112dc)
 
 
+I clicked on exact matches and found our image:
+
+![image](https://github.com/user-attachments/assets/08722c65-824a-42f0-bdc2-55dcdf61fa1e)
+
+This tells us that we're looking at a match, Parker's place.
+
+![image](https://github.com/user-attachments/assets/f2dad6a8-8a61-4fe2-81fa-c82fee1e4684)
+
+The flag was `C1{Parker's_Lowndes}`
+
+----
+
+## Problems in North TORbia
+
+![image](https://github.com/user-attachments/assets/e65121b7-e878-44f6-a030-46d8c07c04bb)
+
+---
+
+Here is the ransom file:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# cat note.txt   
+YOU HAVE BEEN PENETRATED.
+
+We are group of cyber warriors from JUCHE JAGUAR. You are infected.
+Your network, systems, documents, inner secrets — all under full control.
+
+You pretend to be innocent company, but we know your lies and dirty money games.
+We see your crimes. We expose your shadow. We now give you one final mercy option.
+
+WE HOLD:
+
+Secret plans, financial crime records
+
+Executive communications and data treasure
+
+System control ability at root level
+
+Your time is limited. Clock is counting.
+To restore order and avoid global shame, you must pay [X] Bitcoin in 120 hours.
+
+SEND PAYMENT TO:
+http://jjpwn5u6ozdmxjurfitt42hns3qovikeyhocx5b2byoxgupnuzd2vkid.onion/
+
+After payment is confirmed, we will:
+
+Send unlock keys
+
+Remove all stolen data from secure vault
+
+Cease further punishment
+
+If you ignore:
+
+All data go public
+
+Systems will be destroyed
+
+Name will be burned in global news fire
+
+NO GAME. NO NEGOTIATION. NO MERCY.
+We are not common criminal. We are mission.
+We do not bluff. We do not stop.
+Truth is weapon. Fear is justice.
+```
+
+I am going to curl the data down to my virtual machine:
+```bash
+┌──(root㉿kali)-[/home/kali]
+└─# curl http://jjpwn5u6ozdmxjurfitt42hns3qovikeyhocx5b2byoxgupnuzd2vkid.onion/ > output.txt
+curl: (6) Not resolving .onion address (RFC 7686)
+```
+
+I realized that this is a TOR link, I have never used before, so we need the TOR browser in order to access it: https://www.torproject.org/thank-you/
+
+Download Tor and unzip it:
+```bash
+┌──(kali㉿kali)-[~/Downloads]
+└─$ tar -xf tor-browser-linux-x86_64-14.5.3.tar.xz
+```
+
+![image](https://github.com/user-attachments/assets/03b8a046-1d12-4861-a0cd-f5fe49b647e2)
+
+Viewing the source shows us the embedded flag it would return to us with the following parameters in the source:
+
+![image](https://github.com/user-attachments/assets/46b31655-bd86-4ae4-a640-81601637355a)
+
+The flag is:
+```bash
+C1{h1dd3n_f13lds_0f_0n10ns}
+```
+
+----
+
+## Inspo
+
+![image](https://github.com/user-attachments/assets/9a6444b4-1bde-4a33-b1a3-c7e5f38b8101)
+
+---
+
+These are the images:
+
+![image](https://github.com/user-attachments/assets/53e88e51-3acf-4009-9779-3b71b0818246)
+
+We need to find the exact location with google maps, and right-click to acquire coordinates of the:
+
+https://koreajoongangdaily.joins.com/news/2025-04-04/national/northKorea/North-Koreas-Kim-inspects-service-facilities-under-preparation-in-Pyongyangs-new-town/2277671
+
+![image](https://github.com/user-attachments/assets/7635772c-2de6-40db-994f-53e99d9b66d5)
+
+The flag:
+```bash
+C1{39.031,125.720}
+```
 
 ---
 
