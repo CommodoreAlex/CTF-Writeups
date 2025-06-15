@@ -645,7 +645,532 @@ C1{39.031,125.720}
 
 # Recon Category
 
+## Hoasted Toasted
 
+![image](https://github.com/user-attachments/assets/3ac3aadd-0005-45ef-899b-8ccfba4b7f81)
+
+---
+
+The website:
+
+![image](https://github.com/user-attachments/assets/358df38b-1c2d-4eee-8a7d-5195eae355d1)
+
+We can see that this is not a secure website when we join, therefore, we should look at the website certificate.
+
+![image](https://github.com/user-attachments/assets/ad0d2cbc-f460-42f2-89b8-cc87a0afbe48)
+
+In the certificate we see:
+
+![image](https://github.com/user-attachments/assets/ba47c6b1-c946-4f23-8c63-7279ff9aea33)
+
+Acquire the IP address of the domain:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# nslookup not-torbian.ethtrader-ai.com
+
+Server:		192.168.153.2
+Address:	192.168.153.2#53
+
+Non-authoritative answer:
+Name:	not-torbian.ethtrader-ai.com
+Address: 34.86.60.228
+
+```
+
+This will make things accessible to use as we map the remote IP to the internal host:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# cat /etc/hosts                                  
+127.0.0.1	localhost
+127.0.1.1	kali
+::1		localhost ip6-localhost ip6-loopback
+ff02::1		ip6-allnodes
+ff02::2		ip6-allrouters
+
+34.86.60.228  definitelynotaflag.north.torbia
+```
+
+I connected to the HTTPS server using this command, which completes the TLS handshake establishing an encrypted channel with the server:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# openssl s_client -connect definitelynotaflag.north.torbia:443 -servername definitelynotaflag.north.torbia
+Connecting to 34.86.60.228
+CONNECTED(00000003)
+depth=0 C=NT, ST=GloriousState, L=CapitalCity, O=Ministry of Truth, OU=Web Operations, CN=not-torbian.ethtrader-ai.com
+verify error:num=18:self-signed certificate
+verify return:1
+depth=0 C=NT, ST=GloriousState, L=CapitalCity, O=Ministry of Truth, OU=Web Operations, CN=not-torbian.ethtrader-ai.com
+verify return:1
+---
+Certificate chain
+ 0 s:C=NT, ST=GloriousState, L=CapitalCity, O=Ministry of Truth, OU=Web Operations, CN=not-torbian.ethtrader-ai.com
+   i:C=NT, ST=GloriousState, L=CapitalCity, O=Ministry of Truth, OU=Web Operations, CN=not-torbian.ethtrader-ai.com
+   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption
+   v:NotBefore: May 14 11:25:12 2025 GMT; NotAfter: May 14 11:25:12 2026 GMT
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIIEWDCCA0CgAwIBAgIUAIFLrAo9OzS+v5dY/xsmvhvj6bkwDQYJKoZIhvcNAQEL
+BQAwgZcxCzAJBgNVBAYTAk5UMRYwFAYDVQQIDA1HbG9yaW91c1N0YXRlMRQwEgYD
+VQQHDAtDYXBpdGFsQ2l0eTEaMBgGA1UECgwRTWluaXN0cnkgb2YgVHJ1dGgxFzAV
+BgNVBAsMDldlYiBPcGVyYXRpb25zMSUwIwYDVQQDDBxub3QtdG9yYmlhbi5ldGh0
+cmFkZXItYWkuY29tMB4XDTI1MDUxNDExMjUxMloXDTI2MDUxNDExMjUxMlowgZcx
+CzAJBgNVBAYTAk5UMRYwFAYDVQQIDA1HbG9yaW91c1N0YXRlMRQwEgYDVQQHDAtD
+YXBpdGFsQ2l0eTEaMBgGA1UECgwRTWluaXN0cnkgb2YgVHJ1dGgxFzAVBgNVBAsM
+DldlYiBPcGVyYXRpb25zMSUwIwYDVQQDDBxub3QtdG9yYmlhbi5ldGh0cmFkZXIt
+YWkuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArf9F4nj9vbVH
+RRpQ8UsL877jUdMK7beCV5W+SGCYwsHLyyvCQeXAQVxCvLMQw9QyWikntolOlGKy
+my8QYLnfhrjpkwpW8+KLd1tx6/tHZB77WHlyPSyCmCqu1d9AEX6ScmCqLy4Xk31d
+PXNuUmML5OmnetMMvDbOZ2yDmRnQW+1igKqxgcn6jC/MqfgYeieJuyikk8ZIZdbL
+mfjqiBOVWS2vE/KFtEI+DFXqp+U+NJTz1x6MaeL4IJ05YbPPY/mjLEiCB0ADFTZj
+uwD/0Foclix9GPjTDVLk45fc6mc2MsGkMLGiDfCUG8p47wvl0Lcf2cnN0xedqwH3
+ZZMGgRHZBwIDAQABo4GZMIGWMEgGA1UdEQRBMD+CHG5vdC10b3JiaWFuLmV0aHRy
+YWRlci1haS5jb22CH2RlZmluaXRlbHlub3RhZmxhZy5ub3J0aC50b3JiaWEwCQYD
+VR0TBAIwADALBgNVHQ8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwHQYDVR0O
+BBYEFDyKRsXt+1a0j8Bh5zRDvvxVL8C7MA0GCSqGSIb3DQEBCwUAA4IBAQBWHyee
+DN0mNR8FCpxC83wuijLwstZiFo+48dKjONovMhbYAC2NxvnBpdFeGwIwFlsIjNZ/
+FaLc3E/CEgy/REbc8VUbdGaojIrfimR2JgJFdN3Z2UEdp+2k8jkb1SWDT9dEBwfa
+mdfO01kRo8e75RKqeYm9CKC5vwv5fERiHdBmpiUSq5+hAXQxaMMdfluJpsx6k02V
+zgIQl786MiA668UtfEbKHAZKJ/lMxYsh6l1frNfHmRg7KlXuL/x9vzeB/Z5lFCNR
+biqd8TsWwNzQvHesj2R8/VH+xD/D1iXr0TJ060dg4NmlYtYQyQKvyC4gDxpOTMJ6
+GIZPBMwXdWNB8ZA8
+-----END CERTIFICATE-----
+subject=C=NT, ST=GloriousState, L=CapitalCity, O=Ministry of Truth, OU=Web Operations, CN=not-torbian.ethtrader-ai.com
+issuer=C=NT, ST=GloriousState, L=CapitalCity, O=Ministry of Truth, OU=Web Operations, CN=not-torbian.ethtrader-ai.com
+---
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature type: rsa_pss_rsae_sha256
+Peer Temp Key: X25519, 253 bits
+---
+SSL handshake has read 1676 bytes and written 1780 bytes
+Verification error: self-signed certificate
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Protocol: TLSv1.3
+Server public key is 2048 bit
+This TLS version forbids renegotiation.
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify return code: 18 (self-signed certificate)
+---
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: 981F643A1075F6D3E2E1E6AA408FC2D089A9A834ABCD6470A7E7CF5C259EAF01
+    Session-ID-ctx: 
+    Resumption PSK: CCAB4D9CDE58B7E80B24206218C9041EF979C400751C1C03520596F99B180069790E5565378139182E897E3B1E71DDB2
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 (seconds)
+    TLS session ticket:
+    0000 - 38 a8 9f f8 29 5e 5c 91-e2 4b 44 4f b2 bb cf fb   8...)^\..KDO....
+    0010 - 2c 52 04 f9 2f 19 9b b7-57 49 6a c4 84 d2 98 7e   ,R../...WIj....~
+    0020 - 6f ec 0f 9c aa 5a a1 d1-74 f0 b5 b2 20 b4 63 4f   o....Z..t... .cO
+    0030 - 61 35 6c 90 53 a6 c3 2d-99 82 da 8e b5 50 72 7e   a5l.S..-.....Pr~
+    0040 - 12 77 77 b6 14 b6 b3 08-ee 1e ac a0 38 e3 81 fa   .ww.........8...
+    0050 - 5a 3b 92 17 44 ea ca d1-26 6f 57 80 d6 af 88 e8   Z;..D...&oW.....
+    0060 - ed 93 af 54 30 10 1a 6c-3a 62 76 de de 9f 9d f8   ...T0..l:bv.....
+    0070 - a8 9a de d3 b9 92 ef 70-94 15 1e 1c de e6 5c 1f   .......p......\.
+    0080 - f0 87 ea 6d 02 96 5b 8e-0e bb df fb 5b 17 c5 30   ...m..[.....[..0
+    0090 - 3c 42 ef 44 42 0d 70 5e-6f f3 29 a8 3a 0a 31 66   <B.DB.p^o.).:.1f
+    00a0 - 56 e5 a6 12 62 0e b5 5b-21 b2 22 5e 2b e7 a9 c8   V...b..[!."^+...
+    00b0 - 0c c7 aa 68 aa da 73 5d-1f 41 eb c7 7d 16 ad 91   ...h..s].A..}...
+    00c0 - 81 bf 47 90 5f 04 6c ae-65 26 1c 53 19 a2 36 50   ..G._.l.e&.S..6P
+    00d0 - 55 6e 13 5c 08 00 2d 4c-55 83 f6 52 5c 23 bd d8   Un.\..-LU..R\#..
+    00e0 - f4 70 22 91 ac 8c 70 bf-49 23 23 08 43 e8 48 30   .p"...p.I##.C.H0
+    00f0 - 11 29 78 59 51 f5 51 98-24 d3 b3 fd 90 66 ea 54   .)xYQ.Q.$....f.T
+
+    Start Time: 1749925632
+    Timeout   : 7200 (sec)
+    Verify return code: 18 (self-signed certificate)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: BCE2B3278EEADE9599E409EBEA40785ABD7A232AA4A11FE5BAC14E6ED05F565C
+    Session-ID-ctx: 
+    Resumption PSK: 4AFF43FDF25AAF1036E582E89FA5ACA8E0E518A1623309E941EA9CBA4BCA0EE9A2594B6E7BEBF08A23F055C4F6B00686
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 (seconds)
+    TLS session ticket:
+    0000 - 38 a8 9f f8 29 5e 5c 91-e2 4b 44 4f b2 bb cf fb   8...)^\..KDO....
+    0010 - c0 83 b0 22 4b 56 5a e1-17 08 53 d3 12 71 4c 1c   ..."KVZ...S..qL.
+    0020 - 1d 06 22 a8 bc 7d 20 04-ee 54 06 ff bc df f0 d4   .."..} ..T......
+    0030 - 05 c4 5b ba bf 76 61 89-b0 84 78 f9 19 7e 5a ed   ..[..va...x..~Z.
+    0040 - 53 c2 80 82 da 50 d0 06-e7 a0 82 18 06 24 c8 97   S....P.......$..
+    0050 - fd 25 98 f5 08 df bd 96-f1 8a 30 61 28 e1 fc 11   .%........0a(...
+    0060 - 29 5d f7 76 c0 47 e1 ce-89 8b f7 ca b8 88 0b a7   )].v.G..........
+    0070 - b0 60 92 2b 5c 4a 5f ad-58 ff e5 ee be 04 ee fa   .`.+\J_.X.......
+    0080 - 13 8f 86 fb e5 2e f8 eb-9d fe ea 77 b9 a8 b5 ed   ...........w....
+    0090 - 74 29 37 8c f9 fb 35 46-1f e7 a4 03 1d b0 69 a6   t)7...5F......i.
+    00a0 - 91 d2 45 11 5d aa eb 73-76 67 9f 89 2f f2 1b dd   ..E.]..svg../...
+    00b0 - d3 8e 92 e4 76 57 18 59-32 5c f5 67 2f b9 96 b5   ....vW.Y2\.g/...
+    00c0 - 40 b8 59 ea be c2 40 24-34 f3 f3 89 9c 3e e6 25   @.Y...@$4....>.%
+    00d0 - 09 d7 7a 99 ec 71 35 3c-43 ed 93 86 6b c4 cf b1   ..z..q5<C...k...
+    00e0 - ed 52 15 94 9f f1 c5 d3-09 29 98 92 f5 bc a2 a6   .R.......)......
+    00f0 - 5f 20 16 6d 9f d2 2e e4-08 b5 03 06 82 85 f6 55   _ .m...........U
+
+    Start Time: 1749925632
+    Timeout   : 7200 (sec)
+    Verify return code: 18 (self-signed certificate)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK
+closed
+                                                                                   
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# 
+
+
+```
+
+Which is a **raw HTTP request over TLS**, typed directly into the encrypted connection.
+
+I managed to get the flag by curling against `/`, `/secret/`, and `/admin`:
+```html
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# curl -k https://definitelynotaflag.north.torbia/
+curl -k https://definitelynotaflag.north.torbia/secret
+curl -k https://definitelynotaflag.north.torbia/admin
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>North Torbia - Secret Official Portal</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:900,400,300&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: monospace; /* Changed to monospace for the "slick and cool" look */
+            background: linear-gradient(135deg, #1e293b 0%, #0ea5e9 100%); /* Kept the gradient background */
+            color: #00ff00; /* Green text from new file */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px; /* Added padding from new file */
+            box-sizing: border-box; /* Added box-sizing from new file */
+        }
+        header {
+            background: rgba(0,0,0,0.7);
+            padding: 2rem 0 1rem 0;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        header h1 {
+            font-size: 3rem;
+            margin: 0;
+            letter-spacing: 2px;
+            color: #ffff00; /* Yellow title from new file */
+            text-shadow: 0 0 5px #ffff00; /* Yellow text shadow from new file */
+        }
+        nav {
+            margin: 1rem 0;
+        }
+        nav a {
+            color: #fbbf24;
+            text-decoration: none;
+            margin: 0 1.5rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: #38bdf8;
+        }
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem 2rem 1rem;
+            text-align: center;
+        }
+        .hero h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: #ffff00; /* Yellow title from new file */
+            text-shadow: 1px 1px 0 #0f172a;
+        }
+        .hero p {
+            font-size: 1.2em; /* Adjusted from 1.2rem to 1.2em */
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
+            color: #e0e7ef; /* Kept original color, can change to #00ff00 if desired */
+            line-height: 1.5; /* Added line height from new file */
+        }
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .feature {
+            background: rgba(30,41,59,0.95);
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            padding: 2rem 1.5rem;
+            max-width: 320px;
+            min-width: 250px;
+            text-align: left;
+            color: #fff; /* Kept original color */
+            position: relative;
+        }
+        .feature h3 {
+            color: #38bdf8;
+            margin-top: 0;
+            font-size: 1.3rem;
+        }
+        .feature p {
+            color: #e0e7ef; /* Kept original color */
+            font-size: 1rem;
+        }
+        .feature .emoji {
+            font-size: 2rem;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+        }
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            text-align: center;
+            padding: 1rem 0;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            margin-top: auto; /* Push footer to the bottom */
+        }
+        .container {
+            border: 2px dashed #00ff00;
+            padding: 30px;
+            border-radius: 5px;
+            background-color: rgba(0, 20, 0, 0.5);
+            margin-top: 20px; /* Added margin to separate from other content */
+        }
+        .flag {
+            margin-top: 25px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ff00ff;
+            background-color: #333;
+            padding: 15px;
+            border-radius: 3px;
+            display: inline-block;
+            border: 1px solid #ff00ff;
+            box-shadow: 0 0 10px #ff00ff;
+        }
+        .ascii-art {
+            margin-top: 20px;
+            font-size: 0.8em;
+            white-space: pre;
+            color: #00ffff;
+        }
+        @media (max-width: 900px) {
+            .features { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Not North Torbia</h1>
+        <nav>
+            <a href="#backstory">Backstory</a>
+            <a href="#operation">Operation Ctrl+Alt+Deceive</a>
+            <a href="#contact">Contact</a>
+             <a href="#secret">Secret Access</a>
+        </nav>
+    </header>
+    <section class="hero">
+        <h2>Welcome to the Official Secret Portal of North Torbia</h2>
+        <p>
+            Absolutely suspicious North Torbian activity is hosted here.<br>
+            <b>We are definitely plotting global IT domination from a potato-powered mainframe.</b>
+        </p>
+        <div class="features">
+            <div class="feature">
+                <span class="emoji">🥔</span>
+                <h3>The Iron Potato</h3>
+                <p>Our national mainframe, powered by agricultural innovation and the occasional lightning strike. Capable of rendering up to 3 pixels per hour!</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">📧</span>
+                <h3>Spam with Spirit</h3>
+                <p>Mass email campaigns typed on typewriters, then transcribed by hand. Patriotic typos guaranteed.</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">🤖</span>
+                <h3>AI, North Torbia Style</h3>
+                <p>Our chatbot lives in a phone booth and generates resumes after a 3-hour wait. Deepfakes? More like deep mistakes.</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">🎭</span>
+                <h3>Operation Ctrl+Alt+Deceive</h3>
+                <p>Elite operatives trained to mistake the cloud for actual clouds. Agile development? We thought it was a new exercise routine.</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">💻</span>
+                <h3>Remote IT Warriors</h3>
+                <p>Our agents juggle 7 jobs at once, sometimes even in the right time zone. Cameras off for national security (and technical difficulties).</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">🔒</span>
+                <h3>VPNs & Vices</h3>
+                <p>Our VPNs are so secure, even we can't access them. But don't worry, we have a backup plan: carrier pigeons.</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">💰</span>
+                <h3>Crypto Confusion</h3>
+                <p>We accept payment in Bitcoin, but our wallets are lost in the potato fields. Please send cash instead.</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">🦠</span>
+                <h3>Ransomware Rodeo</h3>
+                <p>Our ransomware is so advanced, it sometimes forgets to ask for money. But we promise, it's just a phase.</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">🦸‍♂️</span>
+                <h3>Super Secret Agents</h3>
+                <p>Our agents are so undercover, they sometimes forget their own names. But they always remember the mission!</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">🕵️‍♂️</span>
+                <h3>Spyware Shenanigans</h3>
+                <p>Our spyware is so advanced, it can even spy on itself. But don't worry, it's all in the name of national security.</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">🦠</span>
+                <h3>Phishing Phenom</h3>
+                <p>Our phishing emails are so obvious, even the spam filters feel bad for us. But we promise, it's all part of the plan.</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">🧑‍💻</span>
+                <h3>Remote Work Wizards</h3>
+                <p>Our remote workers are so skilled, they can "work" from anywhere... as long as there's Wi-Fi. And excuses. And a potato.</p>
+            </div>
+        </div>
+    </section>
+    <section id="backstory" class="hero" style="background:rgba(14,165,233,0.08);border-radius:2rem;margin:2rem 0;">
+        <h2>North Torbia's Backstory</h2>
+        <p>
+            North Torbia, a jewel of the global landscape largely unknown and certainly unvisited by anyone with a decent Wi-Fi connection, harbored ambitions far exceeding its technological capabilities. While the rest of the world marveled at gigabit speeds, North Torbia’s national internet infrastructure hummed along at the pace of a tired snail, powered by a complex network of repurposed agricultural equipment.<br><br>
+            The national mainframe, affectionately known as "The Iron Potato," was a relic from a bygone era. Yet, within this technologically challenged nation, a bold vision began to take root: global IT dominance. This audacious plan can be traced back to a momentous occasion when the Supreme Leader, while attempting to access a weather forecast on a dial-up connection that sounded suspiciously like a distressed badger, discovered the world of cyber warfare...
+        </p>
+    </section>
+    <section id="operation" class="hero">
+        <h2>Operation Ctrl+Alt+Deceive</h2>
+        <p>
+            Our top-secret initiative to train North Torbian citizens in the arcane arts of Western IT. Training included staring at clouds, creating AI in phone booths, and mastering the art of the digital typo. Our operatives are now ready to infiltrate the world—one awkward job interview at a time!
+        </p>
+        <div class="features">
+            <div class="feature">
+                <span class="emoji">📝</span>
+                <h3>Fake Identities</h3>
+                <p>Resumes so fake, even our AI can't tell they're not real. Profile photos with more Photoshop than pixels.</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">🌩️</span>
+                <h3>Cloud Confusion</h3>
+                <p>Our best minds spent hours gazing at the sky, searching for the elusive data cloud.</p>
+            </div>
+            <div class="feature">
+                <span class="emoji">🎬</span>
+                <h3>Deepfakes & Drama</h3>
+                <p>Video interviews with faces that shift, blur, and sometimes vanish. It's not a bug, it's a feature!</p>
+            </div>
+        </div>
+    </section>
+    <section id="secret" class="hero">
+         <div class="container">
+            <h1>*** TOP SECRET - INTERNAL ACCESS ***</h1>
+            <p>Authentication successful via internal hostname resolution.</p>
+            <p>Welcome, Agent! You have bypassed standard access protocols.</p>
+            <p>Your flag is:</p>
+            <div class="flag">C1{vH0st_S4n_M4g1c_R3ve4l3d}</div>
+            <div class="ascii-art">
+             .--.
+             |o_o |
+             |:_/ |
+            //   \ \
+           (|     | )
+          /'\_   _/`\
+          \___)=(___/
+            </div>
+            <p style="margin-top: 20px; color: #ff8c00;">Remember: Glorious Leader is always watching... and so is the potato.</p>
+        </div>
+     </section>
+    <section id="contact" class="hero">
+        <h2>Contact North Torbia</h2>
+        <p>
+            Want to join our next operation? Send a carrier pigeon or try our chatbot (expect a 3-hour wait).<br>
+            <b>Email:</b> supreme.leader@north.torbia (definitely not monitored by the state)
+        </p>
+    </section>
+    <footer>
+        &copy; 2025 North Torbia. Powered by The Iron Potato. All rights reserved.<br>
+        <span style="font-size:0.9em;">This is a satirical site for CTF. No actual North Torbians were harmed in the making of this website.</span>
+    </footer>
+</body>
+</html><html>
+<head><title>404 Not Found</title></head>
+<body>
+<center><h1>404 Not Found</h1></center>
+<hr><center>nginx/1.28.0</center>
+</body>
+</html>
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<center><h1>404 Not Found</h1></center>
+<hr><center>nginx/1.28.0</center>
+</body>
+</html>
+
+```
+
+The flag is :
+```bash
+C1{vH0st_S4n_M4g1c_R3ve4l3d}
+```
+
+---
+## Screamin' Streamin'
+
+![image](https://github.com/user-attachments/assets/9ee12432-5751-48dc-9bee-86d5d23f8e8f)
+
+---
+
+This port is found using mass scan, for some reason NMAP does not appear:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# sudo masscan 34.85.185.78 -p 5000-10000 --rate=1000
+Starting masscan 1.3.2 (http://bit.ly/14GZzcT) at 2025-06-14 19:37:20 GMT
+Initiating SYN Stealth Scan
+Scanning 1 hosts [5001 ports/host]
+Discovered open port 8774/tcp on 34.85.185.78   
+```
+
+I managed to get port 8774 using rustscan, nmap, mass scan, and no other ports.
+
+Other things I tried including `-sT`, `-Pn`, and reducing the speed of which I was sending and I found no other ports.
+
+I suspect there was an issue on their end, as the only open port in the 5000-10,000 range was that one and it returned nothing but 'unknown'.
 ---
 
 # Reverse Engineering and Malware
