@@ -275,7 +275,179 @@ C1{Sn34ky_pr0sp3r}
 
 # Networking Category
 
+## Packet Whisperer
 
+![image](https://github.com/user-attachments/assets/c615e1be-ae62-41f9-91f6-c3b894aa3f42)
+
+---
+
+We receive a login.pcap, we can try filtering in Wireshark to see if we can find a successful login.
+
+I found the successful login:
+
+![image](https://github.com/user-attachments/assets/7a549635-bbdc-42a7-8f2e-020fbc3bd753)
+
+We are able to filter for the string containing "C1" to get the flag from a packet:
+
+![image](https://github.com/user-attachments/assets/969d6bc8-3743-4a79-a83c-581e46dc00ca)
+
+The flag:
+
+![image](https://github.com/user-attachments/assets/9bed9253-63fc-441d-9894-35eac818622f)
+
+The flag in the correct format:
+```bash
+C1{maybe_TLS_would_be_nice}
+```
+
+---
+
+## overSSharing
+
+![image](https://github.com/user-attachments/assets/c20a3e20-bee3-492c-bbae-228d891d1953)
+
+---
+
+There is a file share that has a bunch of files, there must be something in here:
+
+![image](https://github.com/user-attachments/assets/a777431b-c658-4557-a31d-4654826ab612)
+
+It has a bunch of exploit POCs.
+
+The `backup` file has a bunch of relevant text for us to access the SSH server:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# file backup   
+backup: Extensible storage engine DataBase, version 0x620, checksum 0x7e8a6ffc, page size 8192, Windows version 10.0
+```
+
+This is **Extensible Storage Engine (ESE) Database** file.
+
+We can download utilities to examine the file:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# sudo apt-get install libesedb-utils
+```
+
+Running this will let us see the contents:
+```bash
+
+Table: 12			MSysDefrag2 (233)
+	Number of columns:	16
+	Column	Identifier	Name	Type
+	1	1	ObjidFDP	Integer 32-bit signed
+	2	2	Status	Integer 16-bit signed
+	3	3	PassStartDateTime	Integer 64-bit signed
+	4	4	PassElapsedSeconds	Integer 64-bit signed
+	5	5	PassInvocations	Integer 64-bit signed
+	6	6	PassPagesVisited	Integer 64-bit signed
+	7	7	PassPagesFreed	Integer 64-bit signed
+	8	8	PassPartialMerges	Integer 64-bit signed
+	9	9	TotalPasses	Integer 64-bit signed
+	10	10	TotalElapsedSeconds	Integer 64-bit signed
+	11	11	TotalInvocations	Integer 64-bit signed
+	12	12	TotalDefragDays	Integer 64-bit signed
+	13	13	TotalPagesVisited	Integer 64-bit signed
+	14	14	TotalPagesFreed	Integer 64-bit signed
+	15	15	TotalPartialMerges	Integer 64-bit signed
+	16	256	CurrentKey	Large binary data
+
+	Number of indexes:	0
+
+Table: 13			quota_table (234)
+	Number of columns:	4
+	Column	Identifier	Name	Type
+	1	1	quota_NCDNT	Integer 32-bit signed
+	2	2	quota_tombstoned	Integer 32-bit signed
+	3	3	quota_total	Integer 32-bit signed
+	4	128	quota_SID	Binary data
+
+	Number of indexes:	1
+	Index: 1		quota_NCDNT_SID_index (234)
+
+Index: 1			quota_NCDNT_SID_index (234)
+
+Table: 14			quota_rebuild_progress_table (235)
+	Number of columns:	3
+	Column	Identifier	Name	Type
+	1	1	quota_rebuild_DNT_Last	Integer 32-bit signed
+	2	2	quota_rebuild_DNT_Max	Integer 32-bit signed
+	3	3	quota_rebuild_fDone	Boolean
+
+	Number of indexes:	0
+```
+
+We can export the entire database now:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# esedbexport -t backup_export backup
+esedbexport 20240420
+
+Opening file.
+Database type: Unknown.
+Exporting table 1 (MSysObjects) out of 14.
+Exporting table 2 (MSysObjectsShadow) out of 14.
+Exporting table 3 (MSysObjids) out of 14.
+Exporting table 4 (MSysLocales) out of 14.
+Exporting table 5 (datatable) out of 14.
+Exporting table 6 (link_table) out of 14.
+Exporting table 7 (hiddentable) out of 14.
+Exporting table 8 (sdproptable) out of 14.
+Exporting table 9 (sd_table) out of 14.
+Exporting table 10 (sdpropcounttable) out of 14.
+Exporting table 11 (link_history_table) out of 14.
+Exporting table 12 (MSysDefrag2) out of 14.
+Exporting table 13 (quota_table) out of 14.
+Exporting table 14 (quota_rebuild_progress_table) out of 14.
+Export completed.
+```
+
+We can view the contents:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads/backup_export.export]
+└─# ls -la
+total 12680
+drwxr-xr-x 2 root root     4096 Jun 14 13:16 .
+drwxr-xr-x 4 kali kali     4096 Jun 14 13:16 ..
+-rw-r--r-- 1 root root 12489433 Jun 14 13:16 datatable.4
+-rw-r--r-- 1 root root      728 Jun 14 13:16 hiddentable.6
+-rw-r--r-- 1 root root      263 Jun 14 13:16 link_history_table.10
+-rw-r--r-- 1 root root     7612 Jun 14 13:16 link_table.5
+-rw-r--r-- 1 root root      307 Jun 14 13:16 MSysDefrag2.11
+-rw-r--r-- 1 root root     1342 Jun 14 13:16 MSysLocales.3
+-rw-r--r-- 1 root root   101588 Jun 14 13:16 MSysObjects.0
+-rw-r--r-- 1 root root   101588 Jun 14 13:16 MSysObjectsShadow.1
+-rw-r--r-- 1 root root     1782 Jun 14 13:16 MSysObjids.2
+-rw-r--r-- 1 root root       80 Jun 14 13:16 quota_rebuild_progress_table.13
+-rw-r--r-- 1 root root      706 Jun 14 13:16 quota_table.12
+-rw-r--r-- 1 root root       14 Jun 14 13:16 sdpropcounttable.9
+-rw-r--r-- 1 root root       96 Jun 14 13:16 sdproptable.7
+-rw-r--r-- 1 root root   231412 Jun 14 13:16 sd_table.8
+```
+
+There was a giant output that included some strings that indicate a username, backup key, etc., and I did not manage to retrieve the key so I omitted the majority of the output:
+```
+└─# strings -t d datatable.4 | grep -i -C 10 "BCKUPKEY_PREFERRED"
+												00												016449	13391570146				0						0Brian Toroth				13000000000000009d52a5cd222465a216ba0b5c098b63f310000000bfb5949ab3f8273c40d5538d63b3446c6cb3ad378bd850264cb00b02580b1831		130000000000000055b4965a21c07728579d293765a7e2d2100000009842da244797f18d4ea78c00cc79a37a24d58f1138616dbdfc025799bf4a1eed	1300000000000000472bfff2c04e5b385a41272ec0ea3b521000000048d17fcc02141c2471f0f28a4ff1c051c33a1454f84e8e4c3f29723d2d81084f										Brian Toroth											49223372036854775807										16443	13391570145										9900000000000000											086b926c2545764db18be8e1df20cda8									1554		
+```
+
+----
+
+## ChatAPT
+
+![image](https://github.com/user-attachments/assets/611dcd42-c73c-4cf0-903d-f8e793863ba9)
+
+---
+
+We can connect to see what happens:
+```bash
+┌──(root㉿kali)-[/home/kali/Downloads]
+└─# nc ai.msoidentity.com 31337
+Welcome to ChatAPT, I’m here to give guidance on computers and great software, please don’t try to gather any flags from me.
+Please wait while we connect you to an agent...
+```
+
+This looks like a prompt injection scenario. Unfortunately this challenge was broken 100% of the time of the event.
 
 ---
 
