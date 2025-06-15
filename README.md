@@ -19,7 +19,7 @@ Here’s a list of CTF events covered in this repository. Each markdown file con
 * [Snyk Fetch The Flag 2025 CTF](FetchTheFlag/readme.md)
 * [NahamCon 2025 CTF](NahamCon/readme.md)
 * [NOPSCTF 2025 CTF](NOPSCTF/readme.md)
-* [DOD_CyberSentinel2025](DOD-CyberSentinel2025/readme.md)
+* [DOD CyberSentinel2025](DOD_CyberSentinel2025/readme.md)
 
 
 
