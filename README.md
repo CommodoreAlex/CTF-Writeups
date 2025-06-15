@@ -16,9 +16,10 @@ Whether you're a beginner or an experienced practitioner, these solutions can he
 
 Here’s a list of CTF events covered in this repository. Each markdown file contains all the problems solved in the event, with detailed solutions and explanations (and when available, the static challenge files):
 
-* [Snyk Fetch The Flag 2025 CTF](FetchTheFlag/snyk-fetch-the-flag-2025.md)
-* [NahamCon 2025 CTF](NahamCon/NahamCon2025CTF.md)
-* [NOPSCTF 2025 CTF](NOPSCTF/nopsctf.md)
+* [Snyk Fetch The Flag 2025 CTF](FetchTheFlag/readme.md)
+* [NahamCon 2025 CTF](NahamCon/readme.md)
+* [NOPSCTF 2025 CTF](NOPSCTF/readme.md)
+* [DOD_CyberSentinel2025](DOD-CyberSentinel2025/readme.md)
 
 
 
