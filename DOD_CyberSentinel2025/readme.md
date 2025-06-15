@@ -98,13 +98,11 @@ The flag:
 C1{metadata_tells_more}
 ```
 
-----
-
 ## Hidden in Plain Sight
 
 ![image](https://github.com/user-attachments/assets/699cf835-d6bc-4175-b050-29b34b5b6c66)
 
---- 
+---
 
 This time we get the flag by running strings and looking for the flag format:
 ```bash
@@ -136,8 +134,6 @@ The flag:
 ```bash
 C1{smile_youre_flagged}
 ```
-
----
 
 ## Remote Help
 
