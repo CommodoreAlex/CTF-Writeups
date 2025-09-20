@@ -1,4 +1,4 @@
-# BSides Connecticut 2025 Capture The Flag
+# BSides Connecticut 2025 Capture The Flag Competition
 
 "Put on the sunglasses. See the flags hidden in plain sight."
 
