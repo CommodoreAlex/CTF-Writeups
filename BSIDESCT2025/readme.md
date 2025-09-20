@@ -6,7 +6,8 @@
 
 ---
 
-![[Pasted image 20250920153537.png]]
+<img width="752" height="208" alt="image" src="https://github.com/user-attachments/assets/c605cdb6-3331-4e36-b309-28af70aee081" />
+
 
 This was a great team building experience with my coworkers and new friends; tackling some diverse CTF challenges. Below are some of the challenges we were able to solve.
 
@@ -25,7 +26,7 @@ This was a great team building experience with my coworkers and new friends; tac
 # Cryptography
 
 
-![[Pasted image 20250920105824.png]]
+<img width="751" height="391" alt="image" src="https://github.com/user-attachments/assets/b86b1da5-56d6-422b-ba29-fa5cb8194e05" />
 
 ----
 
@@ -36,26 +37,26 @@ The following is the output:
 BSIDESCT{XOR_FUN_1}
 ```
 
-![[Pasted image 20250920105607.png]]
+<img width="752" height="302" alt="image" src="https://github.com/user-attachments/assets/4dfd5eec-6348-498e-9e31-332a60091b71" />
 
 ---
 # Steganography
 
-![[Pasted image 20250920144056.png]]
+<img width="772" height="378" alt="image" src="https://github.com/user-attachments/assets/c1e2f3f7-ceb5-4cd5-9bba-66d43f8b3e6e" />
 
 ---
 
 Download and open the `challenge.wav` file in Audacity.
 
 The flag is obtained by switching to spectrogram view on the track:
-![[Pasted image 20250920144030.png]]
+<img width="754" height="214" alt="image" src="https://github.com/user-attachments/assets/0607d5e0-9209-4c28-ae6d-fab50daaec20" />
 
 
 ---
 # Web Application Challenges
 
 
-![[Pasted image 20250920121653.png]]
+<img width="757" height="310" alt="image" src="https://github.com/user-attachments/assets/fa3d2e95-252d-4610-9e20-068786582b36" />
 
 
 ---
@@ -63,14 +64,14 @@ The flag is obtained by switching to spectrogram view on the track:
 The source code tracks the amount of clicks; 0 -> 5.
 
 This will open an opportunity to click a bar between 49 - 51% of the way where you can then open a window here with the flag:
-![[Pasted image 20250920121244.png]]
+<img width="584" height="428" alt="image" src="https://github.com/user-attachments/assets/879dc6ab-5b0c-48d6-92f1-2f91343118d4" />
 
 ----
 
 # Reverse Engineering
 
 
-![[Pasted image 20250920110401.png]]
+<img width="746" height="397" alt="image" src="https://github.com/user-attachments/assets/751269eb-d697-46c4-ac73-9ea30e0fea31" />
 
 
 ---
@@ -234,7 +235,7 @@ Decoded the Base64 text:
 BSIDESCT{STRINGS_FUN}   
 ```
 
-![[Pasted image 20250920110511.png]]
+<img width="750" height="386" alt="image" src="https://github.com/user-attachments/assets/67ddebbe-f33c-4e64-aac4-084c5fad4b1d" />
 
 ---
 
@@ -289,7 +290,7 @@ BSIDESCT{BASE64_FUN3}
 ---
 # MISC Challenges
 
-![[Pasted image 20250920140925.png]]
+<img width="742" height="346" alt="image" src="https://github.com/user-attachments/assets/c319df2b-7bad-4f02-aec0-0b90bb984e09" />
 
 ---
 
@@ -320,7 +321,7 @@ Able to read the flag in ASCII art:
 ```
 
 Opening this up in Gedit will make the image clearer:
-![[Pasted image 20250920140726.png]]
+<img width="753" height="104" alt="image" src="https://github.com/user-attachments/assets/34a53958-91ae-4501-b858-4658174eed24" />
 
 The flag is:
 ```bash
@@ -328,12 +329,12 @@ bsidesct{mount_or_burn_m3}
 ```
 
 
-![[Pasted image 20250920141202.png]]
+<img width="744" height="246" alt="image" src="https://github.com/user-attachments/assets/004dd418-3b4b-4ccd-94d5-c66508c796e6" />
 
 ---
 
 Going to robots.txt returns a flag:
-![[Pasted image 20250920141104.png]]
+<img width="756" height="281" alt="image" src="https://github.com/user-attachments/assets/3f4444b1-5b12-4b8e-a2cb-b2dbca6b6942" />
 
 
 Running `fcrackzip` to acquire a password to access the zip:
@@ -363,4 +364,4 @@ Open the image:
 ```
 
 When you open the image you get:
-![[Pasted image 20250920141852.png]]
+<img width="502" height="186" alt="image" src="https://github.com/user-attachments/assets/694b45c8-cd11-4034-86d9-3ba088633a4c" />
