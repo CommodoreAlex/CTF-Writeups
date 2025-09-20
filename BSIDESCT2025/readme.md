@@ -49,6 +49,7 @@ BSIDESCT{XOR_FUN_1}
 Download and open the `challenge.wav` file in Audacity.
 
 The flag is obtained by switching to spectrogram view on the track:
+
 <img width="754" height="214" alt="image" src="https://github.com/user-attachments/assets/0607d5e0-9209-4c28-ae6d-fab50daaec20" />
 
 
@@ -321,6 +322,7 @@ Able to read the flag in ASCII art:
 ```
 
 Opening this up in Gedit will make the image clearer:
+
 <img width="753" height="104" alt="image" src="https://github.com/user-attachments/assets/34a53958-91ae-4501-b858-4658174eed24" />
 
 The flag is:
@@ -334,6 +336,7 @@ bsidesct{mount_or_burn_m3}
 ---
 
 Going to robots.txt returns a flag:
+
 <img width="756" height="281" alt="image" src="https://github.com/user-attachments/assets/3f4444b1-5b12-4b8e-a2cb-b2dbca6b6942" />
 
 
@@ -364,4 +367,5 @@ Open the image:
 ```
 
 When you open the image you get:
+
 <img width="502" height="186" alt="image" src="https://github.com/user-attachments/assets/694b45c8-cd11-4034-86d9-3ba088633a4c" />
