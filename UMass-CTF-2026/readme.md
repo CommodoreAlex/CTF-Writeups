@@ -223,6 +223,9 @@ See the contents of the run for the flag, another solution:
 ----
 # BINARY: Brick City Office Space
 
+---
+# BINARY: Brick Workshop
+
 Enumerating the context of the binary:
 ```bash
 ┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/Two]
@@ -521,10 +524,6 @@ print(recv())
 s.close()
 "
 ```
-
----
-# BINARY: Brick Workshop
-
 
 ----
 # BINARY: Factory Monitor
