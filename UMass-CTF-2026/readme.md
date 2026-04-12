@@ -6,6 +6,8 @@ Below are the step-by-step processes to obtaining a flag for each challenge we m
 
 This pushes toward the interesting question raised, how much precedence will solutions like Claude Code aide Vulnerability Researchers.
 
+<img width="1479" height="423" alt="image" src="https://github.com/user-attachments/assets/f2dd5088-98a5-4fce-9d5c-4798bc1e90cc" />
+
 ---
 # SRE: Batcave Bitflips
 
