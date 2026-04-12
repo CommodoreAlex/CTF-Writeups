@@ -1,5 +1,6 @@
+# UMASS CTF 2026 
 
-In the UMASS CTF, Bryan Bidleman @bbidleman and I focused on the software reverse engineering and binary exploitation challenges.
+In the UMASS CTF, [Bryan Bidleman](https://github.com/bbidleman) and I focused on the software reverse engineering and binary exploitation challenges.
 
 Below are the step-by-step processes to obtaining a flag for each challenge we managed to solve for ; which was assisted too with Claude Code.
 
