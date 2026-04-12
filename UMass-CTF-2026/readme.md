@@ -220,7 +220,304 @@ See the contents of the run for the flag, another solution:
 ----
 # SRE: Lego Clicker
 
+Enumerating the context of the binary:
+```bash
+┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/Two]
+└─# file bad_eraser              
+bad_eraser: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=b74b3556d83720300f4f2aa20803ba5345b5fb70, for GNU/Linux 3.2.0, not stripped
+                                                                                                                                      
+┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/Two]
+└─# checksec bad_eraser             
+[*] '/home/kali/Downloads/Umass-CTF/Binary_Exploit/Two/bad_eraser'
+    Arch:       amd64-64-little
+    RELRO:      Partial RELRO
+    Stack:      No canary found
+    NX:         NX enabled
+    PIE:        No PIE (0x400000)
+    SHSTK:      Enabled
+    IBT:        Enabled
+    Stripped:   No
+                                                                                                                                      
+┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/Two]
+└─# cat Makefile       
+all:
+	gcc -O0 -fno-stack-protector -no-pie bad_eraser.c -o bad_eraser
+```
 
+We have the source to look at:
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+static int service_initialized = 0;
+
+void win(void) {
+    FILE *fp;
+    char flag_buf[128];
+
+    puts("Master Builder status unlocked!");
+
+    fp = fopen("flag.txt", "r");
+    if (fp == NULL) {
+        puts("flag.txt is missing. Ask an admin to deploy the real flag.");
+        exit(1);
+    }
+
+    if (fgets(flag_buf, sizeof(flag_buf), fp) != NULL) {
+        printf("%s", flag_buf);
+    } else {
+        puts("Failed to read flag.txt");
+    }
+
+    fclose(fp);
+    exit(0);
+}
+
+static void banner(void) {
+    puts("=== Bad Eraser Brick Workshop ===");
+    puts("1) Preview a custom brick");
+    puts("2) Use eraser tool");
+    puts("3) Enter clutch-power diagnostics");
+    puts("4) Close workshop");
+    printf("> ");
+}
+
+static void preview_brick(void) {
+    char model[48];
+
+    printf("Model name: ");
+    if (scanf("%47s", model) != 1) {
+        exit(0);
+    }
+    printf("Built preview for %s with 8 studs.\n", model);
+}
+
+static void erase_station(void) {
+    char note[96];
+
+    printf("What should the eraser remove from your notes? ");
+    if (scanf("%95s", note) != 1) {
+        exit(0);
+    }
+    printf("Eraser scrubbed: %s\n", note);
+}
+
+static unsigned int clutch_score(unsigned int mold_id, unsigned int pigment_code) {
+    return (((mold_id >> 2) & 0x43u) | pigment_code) + (pigment_code << 1);
+}
+
+static void diagnostics_bay(unsigned int mold_id, unsigned int pigment_code) {
+    puts("Running clutch-power diagnostics...");
+    if (clutch_score(mold_id, pigment_code) == 0x23ccdu) {
+        win();
+    }
+
+    puts("Result: unstable clutch fit. Send batch back to sorting.");
+    exit(0);
+}
+
+static void workshop_turn(void) {
+    int choice;
+    unsigned int mold_id;
+    unsigned int pigment_code;
+
+    banner();
+    if (scanf("%d", &choice) != 1) {
+        exit(0);
+    }
+
+    if (choice == 1) {
+        preview_brick();
+        return;
+    }
+
+    if (choice == 2) {
+        erase_station();
+        return;
+    }
+
+    if (choice == 4) {
+        puts("Workshop closed. See you next build day.");
+        exit(0);
+    }
+
+    if (choice != 3) {
+        puts("Unknown action. Pick 1-4.");
+        return;
+    }
+
+    if (!service_initialized) {
+        puts("First-time calibration required.");
+        puts("Enter mold id and pigment code.");
+        if (scanf("%u %u", &mold_id, &pigment_code) != 2) {
+            exit(0);
+        }
+
+        puts("Calibration saved. Re-enter diagnostics for clutch validation.");
+        service_initialized = 1;
+        return;
+    }
+
+    diagnostics_bay(mold_id, pigment_code);
+}
+
+int main(void) {
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stdin, NULL, _IONBF, 0);
+
+    while (1) {
+        workshop_turn();
+    }
+
+    return 0;
+}
+```
+
+##### Source Code Analysis Notes:
+
+On the first visit to choice 3, scanf fills mold_id and pigment_code on the stack, sets service_initialized = 1, and returns — it never calls diagnostics_bay.
+
+On the second visit to choice 3, service_initialized is already 1, so the scanf is skipped entirely. The code falls straight through to diagnostics_bay(mold_id, pigment_code).
+
+But mold_id and pigment_code are local variables — from the compiler's point of view they are uninitialized in this second call. The C standard says reading them is undefined behavior.
+
+In practice (at -O0, on x86-64 Linux), they read whatever bytes happen to sit at those stack slots. And those bytes are exactly the values we wrote on the first visit, because nothing in between overwrites them. 
+
+**The two functions of interest are:**
+- clutch_score()
+- diagnostics_bay()
+
+See clutch score:
+```c
+static unsigned int clutch_score(unsigned int mold_id, unsigned int pigment_code) {
+    return (((mold_id >> 2) & 0x43u) | pigment_code) + (pigment_code << 1);
+}
+```
+
+See diagnostics bay:
+```c
+static void diagnostics_bay(unsigned int mold_id, unsigned int pigment_code) {
+    puts("Running clutch-power diagnostics...");
+    if (clutch_score(mold_id, pigment_code) == 0x23ccdu) {
+        win();
+    }
+```
+
+This is a classic CTF style gatekeeper function. The program prints a message, computes a score from the two inputs, and if that score equals `0x23ccd` you win.
+
+The score we need to win is 146,637 in decimal converted from the score to win above.
+
+##### LLM Suggestions to approach:
+
+Now that you know the exact equation, you can:
+- Solve for pigment_code given mold_id
+- Solve for mold_id given pigment_code
+- Brute‑force both (very easy, small search space)
+- Patch the binary to bypass the check
+- Use GDB to force the condition true
+- Rewrite the function to print the required values
+
+Ways to win:
+1. Solving the equation algebraically.
+2. Writing a brute-forcer.
+3. Patching the binary so `win()` always runs.
+4. Reversing the bitmask to understand which `mold_id` bits matter.
+#### The Math Approach
+
+Making the first term collapse:
+```c
+// With m = 0:
+((0 & 0x43) | p) + 2p
+= p + 2p
+= 3p
+
+// Solve: 3p = 0x23CCD
+p = 0x23CCD / 3
+p = 0xBEEF // = 48879 in decimal
+
+// Verify 3 x 0xBEEF = 0x23CCD
+```
+
+Providing the right numbers locally to test:
+```bash
+┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/Two]
+└─# ./bad_eraser
+=== Bad Eraser Brick Workshop ===
+1) Preview a custom brick
+2) Use eraser tool
+3) Enter clutch-power diagnostics
+4) Close workshop
+> 3
+First-time calibration required.
+Enter mold id and pigment code.
+0
+48879
+Calibration saved. Re-enter diagnostics for clutch validation.
+=== Bad Eraser Brick Workshop ===
+5) Preview a custom brick
+6) Use eraser tool
+7) Enter clutch-power diagnostics
+8) Close workshop
+> 3
+Running clutch-power diagnostics...
+Master Builder status unlocked!
+flag{test_local}
+```
+
+Sending the payload over Netcat with newlines to separate input values for a one-liner:
+```bash
+┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/Two]
+└─#  printf '3\n0 48879\n3\n' | nc bad-eraser-brick-workshop.pwn.ctf.umasscybersec.org 45002
+=== Bad Eraser Brick Workshop ===
+1) Preview a custom brick
+2) Use eraser tool
+3) Enter clutch-power diagnostics
+4) Close workshop
+> First-time calibration required.
+Enter mold id and pigment code.
+Calibration saved. Re-enter diagnostics for clutch validation.
+=== Bad Eraser Brick Workshop ===
+5) Preview a custom brick
+6) Use eraser tool
+7) Enter clutch-power diagnostics
+8) Close workshop
+> Running clutch-power diagnostics...
+Master Builder status unlocked!
+UMASS{brickshop_calibration_reuses_your_last_batch} 
+```
+
+This was really cool to me - got to see a way to separate data sending over netcat.
+
+Here is another way of sending the payload in the terminal with Python:
+```python
+python3 -c "
+import socket, time
+
+s = socket.socket()
+s.connect(('bad-eraser-brick-workshop.pwn.ctf.umasscybersec.org', 45002))
+s.settimeout(3)
+
+def recv():
+    data = b''
+    try:
+        while True:
+            chunk = s.recv(4096)
+            if not chunk: break
+            data += chunk
+    except: pass
+    return data.decode()
+
+print(recv())          # banner
+s.sendall(b'3\n')      # option 3 first time
+print(recv())
+s.sendall(b'0 48879\n') # mold_id=0, pigment_code=0xbeef
+print(recv())
+s.sendall(b'3\n')      # option 3 second time - triggers win()
+print(recv())
+s.close()
+"
+```
 
 ----
 # BINARY: Brick City Office Space
