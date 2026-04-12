@@ -220,6 +220,9 @@ See the contents of the run for the flag, another solution:
 ----
 # SRE: Lego Clicker
 
+----
+# BINARY: Brick City Office Space
+
 Enumerating the context of the binary:
 ```bash
 ┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/Two]
@@ -518,11 +521,6 @@ print(recv())
 s.close()
 "
 ```
-
-----
-# BINARY: Brick City Office Space
-
-
 
 ---
 # BINARY: Brick Workshop
