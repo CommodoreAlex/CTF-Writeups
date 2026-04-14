@@ -834,7 +834,3 @@ print(recv())
 s.close()
 "
 ```
-
-----
-# BINARY: Factory Monitor
-
