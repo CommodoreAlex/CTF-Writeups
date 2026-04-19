@@ -1,6 +1,6 @@
-![[Pasted image 20260419144204.png]]
+<img width="763" height="175" alt="image" src="https://github.com/user-attachments/assets/b22777eb-20ae-4761-89f3-e8973a5a0b32" />
 
-![[Pasted image 20260419142318.png]]
+<img width="861" height="452" alt="image" src="https://github.com/user-attachments/assets/04805559-fcc7-41ff-8e7d-4ee48b9d3bdc" />
 
 ---
 ## Welcome Section
@@ -9,7 +9,7 @@ There is a flag hidden on our LinkedIn page! Feel free to follow our page for up
 
 Page: https://www.linkedin.com/company/ctf-cit
 
-![[Pasted image 20260417191133.png]]
+<img width="812" height="816" alt="image" src="https://github.com/user-attachments/assets/2fb15337-407f-4db0-80eb-a075e994d9a0" />
 
 There is base64 to decode:
 ```bash
@@ -239,7 +239,7 @@ base64 -d
 b9486c74c779db5194d6508bebbee72b
 ```
 
-![[Pasted image 20260419143216.png]]
+<img width="868" height="274" alt="image" src="https://github.com/user-attachments/assets/3e3101a2-1940-458a-8696-094739213269" />
 
 ---
 Forensics
@@ -418,7 +418,7 @@ Attached is a challenge.pdf
 
 We see text that is blacked out - we can highlight this and copy / paste to test if we can read it.
 
-![[Pasted image 20260418095950.png]]
+<img width="763" height="583" alt="image" src="https://github.com/user-attachments/assets/798c6323-f2f6-4a5a-937c-9faabb84ca46" />
 
 We can read it and find the flag in the text:
 ```text
@@ -562,7 +562,7 @@ I dumped the SAM hive and found a document stating the password policy is 5 char
 
 This is an NTLM hash. We can approach this via Hashcat or use crackstation, for simplcity - here is Crackstation.
 
-![[Pasted image 20260417190306.png]]
+<img width="871" height="353" alt="image" src="https://github.com/user-attachments/assets/0e344087-7ac4-4dcc-9b45-2432956f75bb" />
 
 The flag here is: `cit{C1t!!}`
 
@@ -604,7 +604,7 @@ A new user can be created by sending a JSON payload to the `/api/register` endpo
 - Number
 - Symbol
 
-![[Pasted image 20260417183529.png]]
+<img width="716" height="811" alt="image" src="https://github.com/user-attachments/assets/8607df21-9965-4fa4-84df-80baec7e011b" />
 
 Example request:
 ```bash
@@ -647,11 +647,11 @@ Connection: close
 
 ```
 
-![[Pasted image 20260417182140.png|536]]
+<img width="665" height="742" alt="image" src="https://github.com/user-attachments/assets/01ea5b17-f9a8-41a2-aa07-5fee15947ac8" />
 
 Logging into the account we created and intercepting this in Burpsuite.
 
-![[Pasted image 20260417184326.png]]
+<img width="872" height="312" alt="image" src="https://github.com/user-attachments/assets/fbce2384-da65-4768-9600-4bebda0ae249" />
 
 This redirects to the `/dashboard` page. We can follow that too.
 
@@ -673,15 +673,15 @@ The `role` field is important — it determines user privileges.
 
 Forward the rests in the proxy in order to reach the dashboard.
 
-![[Pasted image 20260417184808.png]]
+<img width="866" height="584" alt="image" src="https://github.com/user-attachments/assets/e036cc17-1802-423c-b1d2-205421b73d67" />
 
 Click on the profile link on the dashboard. You will see a form to edit your name, title, and team.
 
-![[Pasted image 20260417185118.png]]
+<img width="865" height="585" alt="image" src="https://github.com/user-attachments/assets/60a4228a-f66d-405a-93db-389c505d2a69" />
 
 Fill in any values and click save changes. In Burp, the request is intercepted or appears in HTTP history.
 
-![[Pasted image 20260417185144.png]]
+<img width="869" height="469" alt="image" src="https://github.com/user-attachments/assets/f5825956-71bf-481a-8a60-c84c13b0b306" />
 
 > Do not forward yet until you modify the body in the next step. If you already forwarded it, right-click the request in HTTP history and choose send to repeater instead.
 
@@ -689,7 +689,7 @@ This is where we can inject the role `admin` in the JSON body.
 
 > This can be achieved via intercept or done with repeater to see the outcome comparisons too, without losing request chain.
 
-![[Pasted image 20260417185356.png]]
+<img width="873" height="361" alt="image" src="https://github.com/user-attachments/assets/7b961603-90da-47c3-8978-a21835e5e786" />
 
 We can see that we received a redirect to login. Now we can login again for an admin session cookie with the same credentials.
 
@@ -707,7 +707,7 @@ Cookie: session=eyJyb2xlIjoiYWRtaW4iLCJ1c2VybmFtZSI6ImVyaWNlcmljIn0.aeK59A.4tUcc
 
 Now we can see the admin console and acquire the flag in the response:
 
-![[Pasted image 20260417185954.png]]
+<img width="868" height="448" alt="image" src="https://github.com/user-attachments/assets/eda4cde4-9ab4-4b7a-8484-93b9fd68875b" />
 
 ## Debug Disaster
 
