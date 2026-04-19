@@ -713,11 +713,11 @@ Now we can see the admin console and acquire the flag in the response:
 
 Developing this application is tough, and I needed debug mode to be enabled... but I'm nervous I forgot to turn it off in production. I also think I may have forgot to remove something from the application structure.
 
-![[Pasted image 20260417193009.png]]
+<img width="869" height="259" alt="image" src="https://github.com/user-attachments/assets/64992323-4864-487e-9db3-e4ea155cd295" />
 
 You see a minimal target when you intercept the page:
 
-![[Pasted image 20260417194303.png]]
+<img width="871" height="263" alt="image" src="https://github.com/user-attachments/assets/d2b11ed5-d531-4b16-9477-e37107a560ab" />
 
 We can fuzz for other pages (`robots.txt` was not available).
 
@@ -752,7 +752,7 @@ The other page with a 400 error yields nothing.
 
 The first page with a 500:
 
-![[Pasted image 20260417194650.png]]
+<img width="885" height="654" alt="image" src="https://github.com/user-attachments/assets/60a9def4-6e52-43fe-bb6c-d90203788f75" />
 
 Instead of a generic "500 Internal Server Error", you get a rich, colorful Werkzeug debugger page with a full Python stack trace. 
 
@@ -760,16 +760,17 @@ This confirms debug=True is set in production. The traceback shows every frame f
 
 You can click on the debug page to find fields that include actual Python code. Among these is a route to `/flg_bar` which we could visit!
 
-![[Pasted image 20260417195134.png]]
+<img width="879" height="561" alt="image" src="https://github.com/user-attachments/assets/b93a73f4-6b6e-416c-9885-b90916132aab" />
 
 Here is the flag for this challenge:
 
-![[Pasted image 20260417195228.png]]
+<img width="671" height="242" alt="image" src="https://github.com/user-attachments/assets/6b619ec1-d2ad-41b5-ad49-c75e70f40235" />
+
 ## Hit Your Limit!
 
 When we arrive on this page we have an input field that will monitor rate limiting.
 
-![[Pasted image 20260417225544.png]]
+<img width="866" height="734" alt="image" src="https://github.com/user-attachments/assets/f062518c-488c-4a33-a68f-bc1530501089" />
 
 In the source code of the page we can see that the application provides an API at `/api/flag?guess=X` that tells you if your guess is a correct prefix of the 32-character flag.
 
@@ -777,21 +778,21 @@ This has a rate limit of 5 requests per 300 seconds per source IP.
 
 The rate limiter itself is applied to the path `/api/flag` but not to `/api/flag/` (with a trailing slash). Flask will still route both to the same handler, so the trailing slash bypasses the rate limiting entirely, allowing unlimited character-by-character brute force.
 
-![[Pasted image 20260417230624.png]]
+<img width="704" height="414" alt="image" src="https://github.com/user-attachments/assets/6fd6aa27-006e-4e8c-a331-b74efb31aed8" />
 
 We can test the logic this way in burp suite Repeater to start:
 
-![[Pasted image 20260417232418.png]]
+<img width="873" height="290" alt="image" src="https://github.com/user-attachments/assets/b8ba2c01-7357-497f-872a-e7b4b5573e4a" />
 
 So we know the flags are all CIT{} and this will be 32 characters. So that solves part of the problem and we can get validation on what works or does not work.
 
 The rate limiting is still an issue though:
 
-![[Pasted image 20260417232539.png]]
+<img width="872" height="254" alt="image" src="https://github.com/user-attachments/assets/a67eb7ba-b4e7-4af0-a7a1-f7107f6a7533" />
 
 To bypass the rate limiting we can add this trailing slash:
 
-![[Pasted image 20260417232629.png]]
+<img width="512" height="138" alt="image" src="https://github.com/user-attachments/assets/197d3a10-dd42-4bee-a191-ffb9e301ae3e" />
 
 Now that this is brute-force friendly and we know what we're looking for (e.g. correct) we can create a Python script to brute force this.
 
@@ -862,21 +863,21 @@ The intern said they made a custom report application... but I don't think secur
 
 We can create an account here:
 
-![[Pasted image 20260417223815.png]]
+<img width="674" height="601" alt="image" src="https://github.com/user-attachments/assets/780285fa-7360-4d43-8334-c7c634453a22" />
 
 After making a user and password of `test123:test123` I was able to reach this:
 
-![[Pasted image 20260417223851.png]]
+<img width="870" height="483" alt="image" src="https://github.com/user-attachments/assets/639fc3c7-f63f-4852-aee8-645e2f314045" />
 
 So we can create a report and see what happens next.
 
 We can probably increment or decrement this report for an IDOR vulnerability:
 
-![[Pasted image 20260417224259.png]]
+<img width="863" height="335" alt="image" src="https://github.com/user-attachments/assets/7d8eecc3-03b7-4251-8ec2-a01dbc335707" />
 
 Doing that will give us "Fake Reports"
 
-![[Pasted image 20260417224331.png]]
+<img width="863" height="268" alt="image" src="https://github.com/user-attachments/assets/45d840d6-5d3a-4efb-92c2-885dc1feb90d" />
 
 We can probably make a script to evaluate the contents of that field and avoid anything such as "Fake report"
 
@@ -963,11 +964,11 @@ I hear something...
 
 Visiting the main page we can attempt to insert things (e.g. XSS injection), this does not do anything though:
 
-![[Pasted image 20260417195432.png]]
+<img width="869" height="705" alt="image" src="https://github.com/user-attachments/assets/5a82abf9-b831-4288-ba07-7b7a72a0e1fb" />
 
 XSS is not working. We can try Server-Side Template Injection (SSTI).
 
-![[Pasted image 20260417221148.png]]
+<img width="866" height="527" alt="image" src="https://github.com/user-attachments/assets/bbdfda9e-f480-4f55-a2df-ffcdc85efd9f" />
 
 This input field is vulnerable to SSTI - where we can reach 49 observed by that input above.
 
@@ -978,7 +979,7 @@ Using this payload works:
 {{request|attr('application')|attr('\x5f\x5fglobals\x5f\x5f')|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fbuiltins\x5f\x5f')|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fimport\x5f\x5f')('os')|attr('popen')('id')|attr('read')()}}
 ```
 
-![[Pasted image 20260417222244.png]]
+<img width="867" height="548" alt="image" src="https://github.com/user-attachments/assets/3e0dbd53-c6e4-411e-93e5-e5140bb869dc" />
 
 We can see we are the CTF user. We can look at running more commands to figure out next steps.
 
@@ -993,10 +994,10 @@ Trying another payload due to challenges running commands like this:
 |attr("communicate")()|attr("__geti"+"tem__")(0)}}
 ```
 
-![[Pasted image 20260417222837.png]]
+<img width="870" height="601" alt="image" src="https://github.com/user-attachments/assets/57cd7b4c-7f14-47c2-8324-374c841e5825" />
 
 We can see the flag is here at `/tmp`.
 
-![[Pasted image 20260417222933.png]]
+<img width="864" height="534" alt="image" src="https://github.com/user-attachments/assets/fe450911-9cac-4d5d-aaf6-a9156cabb831" />
 
 ---
