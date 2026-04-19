@@ -2,6 +2,7 @@
 
 <img width="861" height="452" alt="image" src="https://github.com/user-attachments/assets/04805559-fcc7-41ff-8e7d-4ee48b9d3bdc" />
 
+
 See link to the CTF page: https://ctf.cyber-cit.club/
 
 ---
